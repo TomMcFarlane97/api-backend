@@ -2,3 +2,4 @@
 .idea
 
 phinx.yml
+.env
