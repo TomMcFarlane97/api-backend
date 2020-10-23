@@ -28,51 +28,39 @@ abstract class AbstractRepository
     /**
      * @param int $id
      * @return object|null
-     * @throws RepositoryException|EntityException|DatabaseException
+     * @throws DatabaseException
      */
     public function find(int $id): ?object
     {
-        $query = $this->connection->query(sprintf('SELECT * %s WHERE id = :id', $this->tableName));
+        $query = $this->connection->query(sprintf('SELECT * FROM %s WHERE id = :id', $this->tableName));
         if (!$query) {
             throw new DatabaseException(sprintf('Internal Database error on method "%s" and line "%s"', __METHOD__, __LINE__));
         }
         $query->bindValue(':id', $id);
         $query->execute();
-        $entity = $query->fetch();
-        return $this->mapRowToEntity($entity);
+        return $query->fetchObject($this->entityName);
     }
 
     /**
-     * @param null|array<string, string> $entityValues
-     * @return null|object
-     * @throws RepositoryException|EntityException
+     * @return object[]
+     * @throws DatabaseException
      */
-    private function mapRowToEntity(?array $entityValues): ?object
+    public function findAll(): array
     {
-        if (empty($entityValues)) {
-            return null;
+        $this->connection->setAttribute(PDO::ATTR_CASE, PDO::CASE_NATURAL);
+        $query = $this->connection->query(sprintf('SELECT %s FROM %s', implode(',', array_keys($this->columns)), $this->tableName));
+        if (!$query) {
+            throw new DatabaseException(sprintf('Internal Database error on method "%s" and line "%s"', __METHOD__, __LINE__));
         }
-        $entity = new $this->entityName($entityValues[$this->primaryKeyName]);
-        foreach ($entityValues as $key => $value) {
-            if (empty($this->columns[$key])) {
-                throw new EntityException(
-                    sprintf(
-                        'Key "%s" does not exist for entity "%s" inside the columns "%s". Please add it to the columns',
-                        $key,
-                        $this->entityName,
-                        implode(', ', $this->columns)
-                    )
-                );
-            }
-            $methodName = $this->columns[$key];
-            if (!method_exists($entity, $methodName)) {
-                throw new RepositoryException(
-                    sprintf('Class "%s" does not contain method "%s"', $this->entityName, $methodName)
-                );
-            }
-            $entity->{$methodName}($value);
+        $query->execute();
+        $query = $query->fetchAll(PDO::FETCH_CLASS, $this->entityName);
+        if ($query === false) {
+            throw new DatabaseException(sprintf(
+                'Internal Database error trying to retrieve the results on method "%s" and line "%s"',
+                __METHOD__,
+                __LINE__
+            ));
         }
-
-        return $entity;
+        return $query;
     }
 }
