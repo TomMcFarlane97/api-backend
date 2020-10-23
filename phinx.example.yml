@@ -1,0 +1,16 @@
+paths:
+  migrations: ./src/Migration
+
+environments:
+  default_migration_table: phinxlog
+  default_environment: development
+  environment: development
+  development:
+    adapter: mysql
+    host: localhost
+    name: ''
+    user: ''
+    pass: ''
+    port: ''
+    charset: utf8
+    collation: utf8_unicode_ci
