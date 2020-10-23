@@ -21,12 +21,14 @@ abstract class AbstractController
     protected const HEADER_CONTENT_TYPE = 'Content-type';
     private const HEADER_ACCEPT = 'Accept';
 
+    /** @var string[] */
+    protected array $jsonResponseHeader = [self::HEADER_CONTENT_TYPE => self::JSON];
+
     /**
-     * Validates is JSON request
      * @param RequestInterface $request
      * @throws RequestException
      */
-    protected function validateRequest(RequestInterface $request): void
+    protected function validateRequestIsJson(RequestInterface $request): void
     {
         $contentType = $request->getHeader(self::HEADER_CONTENT_TYPE);
         if (!empty($contentType[0]) && !str_contains($contentType[0], self::JSON)
@@ -56,7 +58,7 @@ abstract class AbstractController
      */
     protected static function jsonEncodeArray(array $message, bool $canConvertToArray = false): string
     {
-        $message = $canConvertToArray ? self::convertObjectToEncodedArray($message) : $message = json_encode($message);
+        $message = $canConvertToArray ? self::jsonEncodeArray(self::convertObjectToArray($message)) : json_encode($message);
         if ($message === false) {
             throw new ImANumptyException('Can you even code bro', self::TEA_POT);
         }
@@ -65,10 +67,10 @@ abstract class AbstractController
 
     /**
      * @param array<ConvertToArrayInterface|array<string>|string> $entities
-     * @return string
+     * @return array<int, array<string, mixed>>
      * @throws EntityException|ImANumptyException
      */
-    private static function convertObjectToEncodedArray(array $entities): string
+    protected static function convertObjectToArray(array $entities): array
     {
         $message = [];
         foreach ($entities as $entity) {
@@ -78,6 +80,6 @@ abstract class AbstractController
             $message[] = $entity->convertToArray();
         }
 
-        return self::jsonEncodeArray($message);
+        return $message;
     }
 }
