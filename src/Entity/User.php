@@ -19,32 +19,32 @@ class User
         return $this->id;
     }
 
-    public function get_first_name(): string
+    public function getFirstName(): string
     {
         return $this->first_name;
     }
 
-    public function set_first_name(string $firstName): void
+    public function setFirstName(string $firstName): void
     {
         $this->first_name = $firstName;
     }
 
-    public function get_last_name(): string
+    public function getLastName(): string
     {
         return $this->last_name;
     }
 
-    public function set_last_name(string $lastName): void
+    public function setLastName(string $lastName): void
     {
         $this->last_name = $lastName;
     }
 
-    public function get_email_address(): string
+    public function getEmailAddress(): string
     {
         return $this->email_address;
     }
 
-    public function set_email_address(string $emailAddress): void
+    public function setEmailAddress(string $emailAddress): void
     {
         $this->email_address = $emailAddress;
     }
