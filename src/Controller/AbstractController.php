@@ -2,9 +2,12 @@
 
 namespace App\Controller;
 
+use App\Exceptions\EntityException;
 use App\Exceptions\ImANumptyException;
 use App\Exceptions\RequestException;
+use App\Interfaces\ConvertToArrayInterface;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 abstract class AbstractController
 {
@@ -16,7 +19,7 @@ abstract class AbstractController
     protected const UNPROCESSABLE_ENTITY = 422;
     protected const CREATED = 201;
     protected const INTERNAL_SERVER_ERROR = 500;
-    private const HEADER_CONTENT_TYPE = 'Content-type';
+    protected const HEADER_CONTENT_TYPE = 'Content-type';
     private const HEADER_ACCEPT = 'Accept';
 
     /**
@@ -46,16 +49,36 @@ abstract class AbstractController
     }
 
     /**
-     * @param string[] $message
+     * @param array<int, string[]>|ConvertToArrayInterface[]|string[] $message
+     * @param bool $canConvertToArray
      * @return string
+     * @throws EntityException
      * @throws ImANumptyException
      */
-    protected static function jsonEncodeArray(array $message): string
+    protected static function jsonEncodeArray(array $message, bool $canConvertToArray = false): string
     {
-        $message = json_encode($message);
+        $message = $canConvertToArray ? self::convertObjectToEncodedArray($message) : $message = json_encode($message);
         if ($message === false) {
             throw new ImANumptyException('Can you even code bro', self::TEA_POT);
         }
         return $message;
+    }
+
+    /**
+     * @param array<ConvertToArrayInterface|array<string>|string> $entities
+     * @return string
+     * @throws EntityException|ImANumptyException
+     */
+    private static function convertObjectToEncodedArray(array $entities): string
+    {
+        $message = [];
+        foreach ($entities as $entity) {
+            if (!$entity instanceof ConvertToArrayInterface) {
+                throw new ImANumptyException(sprintf('Can you even code bro. Method - %s', __METHOD__), self::TEA_POT);
+            }
+            $message[] = $entity->convertToArray();
+        }
+
+        return self::jsonEncodeArray($message);
     }
 }

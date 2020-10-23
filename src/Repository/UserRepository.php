@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\User;
+use App\Traits\UserDatabaseTrait;
 
 /**
  * Class UserRepository
@@ -16,11 +17,5 @@ class UserRepository extends AbstractRepository
     protected string $primaryKeyName = 'id';
     protected string $entityName = User::class;
 
-    /** @var array<string, string>  */
-    protected array $columns = [
-        'id' => '',
-        'first_name' => 'setFirstName',
-        'last_name' => 'setLastName',
-        'email_address' => 'setEmailAddress',
-    ];
+    use UserDatabaseTrait;
 }
