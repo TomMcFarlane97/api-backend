@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Exceptions\DatabaseException;
 use App\Exceptions\EntityException;
 use App\Exceptions\RepositoryException;
 use App\Factory\DatabaseFactory;
@@ -27,11 +28,14 @@ abstract class AbstractRepository
     /**
      * @param int $id
      * @return object|null
-     * @throws RepositoryException|EntityException
+     * @throws RepositoryException|EntityException|DatabaseException
      */
     public function find(int $id): ?object
     {
         $query = $this->connection->query(sprintf('SELECT * %s WHERE id = :id', $this->tableName));
+        if (!$query) {
+            throw new DatabaseException(sprintf('Internal Database error on method "%s" and line "%s"', __METHOD__, __LINE__));
+        }
         $query->bindValue(':id', $id);
         $query->execute();
         $entity = $query->fetch();
@@ -39,12 +43,15 @@ abstract class AbstractRepository
     }
 
     /**
-     * @param ?|array $entityValues
-     * @return object
+     * @param null|array<string, string> $entityValues
+     * @return null|object
      * @throws RepositoryException|EntityException
      */
-    private function mapRowToEntity(?array $entityValues): object
+    private function mapRowToEntity(?array $entityValues): ?object
     {
+        if (empty($entityValues)) {
+            return null;
+        }
         $entity = new $this->entityName($entityValues[$this->primaryKeyName]);
         foreach ($entityValues as $key => $value) {
             if (empty($this->columns[$key])) {

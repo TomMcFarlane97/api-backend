@@ -11,7 +11,7 @@ class DatabaseFactory
 
     public static function getDatabase(): ConnectionInterface
     {
-        if (!self::$connection) {
+        if (!self::$connection instanceof ConnectionInterface) {
             self::$connection = (new PDOConnection());
         }
         return self::$connection;
