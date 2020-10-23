@@ -7,7 +7,6 @@ use App\Exceptions\ImANumptyException;
 use App\Exceptions\RequestException;
 use App\Interfaces\ConvertToArrayInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 abstract class AbstractController
 {
