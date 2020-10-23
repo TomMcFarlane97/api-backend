@@ -7,7 +7,7 @@ use App\Interfaces\ConnectionInterface;
 
 class DatabaseFactory
 {
-    private static ConnectionInterface $connection;
+    private static ?ConnectionInterface $connection = null;
 
     public static function getDatabase(): ConnectionInterface
     {
