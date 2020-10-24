@@ -6,18 +6,19 @@ use App\Controller\AbstractController;
 use App\Exceptions\RepositoryException;
 use App\Exceptions\RequestException;
 use App\Interfaces\ConvertToArrayInterface;
+use App\Repository\AbstractRepository;
 
 /**
  * Trait BuildEntityLoop
  * @package App\Traits
- * @property $repository
+ * @property AbstractRepository $repository
  */
 trait BuildEntityLoopTrait
 {
     /**
      * @param string $entityString
-     * @param array $entityBody
-     * @param array $columnSetters
+     * @param array<string, string|int> $entityBody
+     * @param string[] $columnSetters
      * @param bool $isUpdate
      * @param ConvertToArrayInterface|null $currentEntity
      * @return ConvertToArrayInterface
@@ -49,7 +50,6 @@ trait BuildEntityLoopTrait
 
         return $entity;
     }
-
 
     /**
      * @param string[] $columnSetters

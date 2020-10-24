@@ -18,10 +18,11 @@ use PDOStatement;
  * @property array<string, string> $columnSetters - Must be key => value for the 'name of column' => 'setter method on object'
  * @property array<string, string> $columnGetters - Must be key => value for the 'name of column' => 'getter method on object'
  * @property string $primaryKeyName - Column name of primary key
- * @property string[] $foreignKeys - Column name of foreign keys in an array
+ * @property array<string, string> $foreignKeys - Column name of foreign keys in an array
  */
 abstract class AbstractRepository
 {
+    /** @var array<string, string> */
     protected array $foreignKeys = [];
     private PDO $connection;
 

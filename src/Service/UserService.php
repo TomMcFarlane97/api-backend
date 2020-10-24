@@ -104,37 +104,4 @@ class UserService
         }
         return $user;
     }
-
-    /**
-     * @param array<string, mixed> $userBody
-     * @param bool $isUpdate
-     * @param User|null $currentUser
-     * @return User
-     * @throws RepositoryException
-     * @throws RequestException
-     */
-    private function mergeUserBodyToObject(array $userBody, bool $isUpdate = false, User $currentUser = null): User
-    {
-        $columnSetters = $this->repository->getColumnSetters(true);
-        $entity = $this->repository->getEntityName();
-        /** @var User $user */
-        $user = $currentUser ? $currentUser : new $entity();
-        foreach ($userBody as $columnKey => $columnValue) {
-            $this->throwErrorIfNotValidSetter($columnSetters, $columnKey, $entity, $user);
-            $user->{$columnSetters[$columnKey]}($columnValue);
-            unset($columnSetters[$columnKey]);
-        }
-
-        if (!$isUpdate && !empty($columnSetters)) {
-            throw new RequestException(
-                sprintf(
-                    'Body of request does not contain the following values %s',
-                    implode(',', array_keys($columnSetters))
-                ),
-                AbstractController::UNPROCESSABLE_ENTITY
-            );
-        }
-
-        return $user;
-    }
 }
