@@ -2,9 +2,11 @@
 
 namespace App\Entity;
 
-use App\Exceptions\EntityException;
+use App\Exceptions\RequestException;
 use App\Interfaces\ConvertToArrayInterface;
+use App\Traits\ConvertToArrayTrait;
 use App\Traits\UserDatabaseTrait;
+use App\Validators\EmailAddressValidator;
 
 /**
  * Class User
@@ -18,7 +20,7 @@ class User implements ConvertToArrayInterface
     private string $last_name;
     private string $email_address;
 
-    use UserDatabaseTrait;
+    use UserDatabaseTrait, ConvertToArrayTrait;
 
     public function getId(): int
     {
@@ -50,26 +52,12 @@ class User implements ConvertToArrayInterface
         return $this->email_address;
     }
 
+    /**
+     * @param string $emailAddress
+     * @throws RequestException
+     */
     public function setEmailAddress(string $emailAddress): void
     {
-        $this->email_address = $emailAddress;
-    }
-
-    /**
-     * @return array<string, mixed>
-     * @throws EntityException
-     */
-    public function convertToArray(): array
-    {
-        $transformer = [];
-        foreach (array_keys($this->columns) as $key) {
-            if (empty($this->{$key})) {
-                throw new EntityException(
-                    sprintf('"%s" Entity does not contain this column in the trait "%s"', __CLASS__, $key)
-                );
-            }
-            $transformer[$key] = $this->{$key};
-        }
-        return $transformer;
+        $this->email_address = (new EmailAddressValidator($emailAddress))->getEmailAddress();
     }
 }
