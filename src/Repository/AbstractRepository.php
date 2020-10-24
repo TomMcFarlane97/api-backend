@@ -75,10 +75,10 @@ abstract class AbstractRepository
 
     /**
      * @param int $id
-     * @return object|null
+     * @return ConvertToArrayInterface|null
      * @throws DatabaseException|RepositoryException
      */
-    public function find(int $id): ?object
+    public function find(int $id): ?ConvertToArrayInterface
     {
         $queryString = sprintf(sprintf(
             'SELECT %s FROM %s WHERE id = %s',
@@ -135,7 +135,7 @@ abstract class AbstractRepository
 
     /**
      * @param bool $excludePrimaryKey
-     * @return array
+     * @return string[]
      * @throws RepositoryException
      */
     protected function getColumnKeys(bool $excludePrimaryKey = false): array
@@ -155,7 +155,7 @@ abstract class AbstractRepository
     /**
      * @param string $columnNames
      * @param string $columnValues
-     * @return object|ConvertToArrayInterface
+     * @return ConvertToArrayInterface
      * @throws DatabaseException|RepositoryException
      */
     protected function insertSingle(string $columnNames, string $columnValues): ConvertToArrayInterface
