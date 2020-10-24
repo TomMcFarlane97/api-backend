@@ -1,0 +1,31 @@
+version: "3.0"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: ./Docker/PHP/Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www
+    restart: always
+    depends_on:
+      - db
+  db:
+    image: library/mysql:8.0.22
+    ports:
+      - '3306:3306'
+    restart: 'always'
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: 'api_backend'
+      MYSQL_USER: 'root'
+      # You can use whatever password you like
+      MYSQL_PASSWORD: 'password'
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: 'password'
+      expose: '3306'
+volumes:
+  db_data: {}
