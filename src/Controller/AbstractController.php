@@ -5,8 +5,10 @@ namespace App\Controller;
 use App\Exceptions\EntityException;
 use App\Exceptions\ImANumptyException;
 use App\Exceptions\RequestException;
+use App\Helpers\Environment;
 use App\Interfaces\ConvertToArrayInterface;
 use Psr\Http\Message\RequestInterface;
+use Throwable;
 
 abstract class AbstractController
 {
@@ -48,6 +50,19 @@ abstract class AbstractController
                 self::BAD_REQUEST
             );
         }
+    }
+
+    /**
+     * @param Throwable $exception
+     * @return string[]
+     */
+    protected function getMessage(Throwable $exception): array
+    {
+        $message = ['message' => $exception->getMessage()];
+        if (!Environment::isProduction()) {
+            $message = array_merge($message, $exception->getTrace());
+        }
+        return $message;
     }
 
     /**

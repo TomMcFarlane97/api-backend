@@ -33,13 +33,13 @@ class UserController extends AbstractController
             $users = $this->userService->getAllUsers();
         } catch (RequestException $exception) {
             return new JsonResponse(
-                ['message' => $exception->getMessage()],
+                $this->getMessage($exception),
                 $exception->getCode(),
                 $this->jsonResponseHeader
             );
         } catch (Throwable $exception) {
             return new JsonResponse(
-                ['message' => $exception->getMessage()],
+                $this->getMessage($exception),
                 self::INTERNAL_SERVER_ERROR,
                 $this->jsonResponseHeader
             );
@@ -63,15 +63,18 @@ class UserController extends AbstractController
         try {
             $this->validateRequestIsJson($request);
             $user = $this->userService->getUserById((int) $args['userId']);
+            if (!$user) {
+                throw new RequestException(sprintf('User ID "%s" does not exist', $args['userId']), self::BAD_REQUEST);
+            }
         } catch (RequestException $exception) {
             return new JsonResponse(
-                ['message' => $exception->getMessage()],
+                $this->getMessage($exception),
                 $exception->getCode(),
                 $this->jsonResponseHeader
             );
         } catch (Throwable $exception) {
             return new JsonResponse(
-                ['message' => $exception->getMessage()],
+                $this->getMessage($exception),
                 self::INTERNAL_SERVER_ERROR,
                 $this->jsonResponseHeader
             );
@@ -101,13 +104,13 @@ class UserController extends AbstractController
             ));
         } catch (RequestException $exception) {
             return new JsonResponse(
-                ['message' => $exception->getMessage()],
+                $this->getMessage($exception),
                 $exception->getCode(),
                 $this->jsonResponseHeader
             );
         } catch (Throwable $exception) {
             return new JsonResponse(
-                ['message' => $exception->getMessage()],
+                $this->getMessage($exception),
                 self::INTERNAL_SERVER_ERROR,
                 $this->jsonResponseHeader
             );
