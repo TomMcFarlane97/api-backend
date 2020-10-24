@@ -9,14 +9,22 @@ use App\Exceptions\RepositoryException;
 use App\Exceptions\RequestException;
 use App\Interfaces\ConvertToArrayInterface;
 use App\Repository\UserRepository;
+use App\Traits\BuildEntityLoopTrait;
 
+/**
+ * Class UserService
+ * @package App\Service
+ * @method User buildEntity(string $entityString, array $entityBody, array $columnSetters, bool $isUpdate = false, User $currentEntity = null): User
+ */
 class UserService
 {
-    private UserRepository $userRepository;
+    use BuildEntityLoopTrait;
+
+    private UserRepository $repository;
 
     public function __construct(UserRepository $userRepository)
     {
-        $this->userRepository = $userRepository;
+        $this->repository = $userRepository;
     }
 
     /**
@@ -25,7 +33,7 @@ class UserService
      */
     public function getAllUsers(): array
     {
-        return $this->userRepository->findAll();
+        return $this->repository->findAll();
     }
 
     /**
@@ -35,17 +43,21 @@ class UserService
      */
     public function getUserById(int $userId): ?User
     {
-        return $this->userRepository->find($userId);
+        return $this->repository->find($userId);
     }
 
     /**
      * @param array<string, mixed> $userBody
      * @return User
-     * @throws RepositoryException|RequestException|DatabaseException
+     * @throws DatabaseException|RepositoryException
      */
     public function createUser(array $userBody): User
     {
-        return $this->userRepository->createUser($this->mergeUserBodyToObject($userBody));
+        return $this->repository->createUser($this->buildEntity(
+            $this->repository->getEntityName(),
+            $userBody,
+            $this->repository->getColumnSetters(true),
+        ));
     }
 
     /**
@@ -56,9 +68,11 @@ class UserService
      */
     public function updateUser(int $userId, array $userBody): User
     {
-        return $this->userRepository->updateUser(
-            $this->mergeUserBodyToObject(
+        return $this->repository->updateUser(
+            $this->buildEntity(
+                $this->repository->getEntityName(),
                 $userBody,
+                $this->repository->getColumnSetters(true),
                 true,
                 $this->retrieveUser($userId)
             )
@@ -72,7 +86,7 @@ class UserService
      */
     public function deleteUser(int $userId): void
     {
-        $this->userRepository->deleteUser(
+        $this->repository->deleteUser(
             $this->retrieveUser($userId)
         );
     }
@@ -101,8 +115,8 @@ class UserService
      */
     private function mergeUserBodyToObject(array $userBody, bool $isUpdate = false, User $currentUser = null): User
     {
-        $columnSetters = $this->userRepository->getColumnSetters(true);
-        $entity = $this->userRepository->getEntityName();
+        $columnSetters = $this->repository->getColumnSetters(true);
+        $entity = $this->repository->getEntityName();
         /** @var User $user */
         $user = $currentUser ? $currentUser : new $entity();
         foreach ($userBody as $columnKey => $columnValue) {
@@ -122,41 +136,5 @@ class UserService
         }
 
         return $user;
-    }
-
-    /**
-     * @param string[] $columnSetters
-     * @param string $columnKey
-     * @param string $entityString
-     * @param ConvertToArrayInterface $entityObject
-     * @throws RepositoryException|RequestException
-     */
-    private function throwErrorIfNotValidSetter(
-        array $columnSetters,
-        string $columnKey,
-        string $entityString,
-        ConvertToArrayInterface $entityObject
-    ): void {
-        if (empty($columnSetters[$columnKey])) {
-            throw new RequestException(
-                sprintf(
-                    'Key name "%s" is not valid, the only valid key names are: %s',
-                    $columnKey,
-                    $this->userRepository->getColumnKeysAsString(true)
-                ),
-                AbstractController::UNPROCESSABLE_ENTITY
-            );
-        }
-
-        $method = $columnSetters[$columnKey];
-        if (!method_exists($entityObject, $method)) {
-            throw new RepositoryException(
-                sprintf(
-                    'Method "%s" does not exist on entity "%s". Check the set up for its repository.',
-                    $method,
-                    $entityString
-                ),
-                AbstractController::NOT_IMPLEMENTED);
-        }
     }
 }

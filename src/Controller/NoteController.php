@@ -8,6 +8,7 @@ use App\Exceptions\ImANumptyException;
 use App\Exceptions\RepositoryException;
 use App\Exceptions\RequestException;
 use App\Service\NoteService;
+use JsonException;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -52,11 +53,30 @@ class NoteController extends AbstractController
      * @param ResponseInterface $response
      * @param string[] $args
      * @return ResponseInterface
+     * @throws JsonException|EntityException
      */
     public function createNote(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
+        try {
+            $this->validateRequestIsJson($request);
+            $user = $this->noteService->createNote(
+                (int) $args['userId'],
+                json_decode(
+                    $request->getBody()->getContents(),
+                    true,
+                    512,
+                    JSON_THROW_ON_ERROR
+                )
+            );
+        } catch (RequestException|DatabaseException|RepositoryException $exception) {
+            return new JsonResponse(
+                $this->getMessage($exception),
+                $exception->getCode(),
+                $this->jsonResponseHeader
+            );
+        }
         return new JsonResponse(
-            ['message' => '@todo - populate ' . __METHOD__],
+            $user->convertToArray(),
             self::ACCEPTED,
             $this->jsonResponseHeader
         );

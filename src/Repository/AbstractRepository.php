@@ -18,9 +18,11 @@ use PDOStatement;
  * @property array<string, string> $columnSetters - Must be key => value for the 'name of column' => 'setter method on object'
  * @property array<string, string> $columnGetters - Must be key => value for the 'name of column' => 'getter method on object'
  * @property string $primaryKeyName - Column name of primary key
+ * @property string[] $foreignKeys - Column name of foreign keys in an array
  */
 abstract class AbstractRepository
 {
+    protected array $foreignKeys = [];
     private PDO $connection;
 
     public function __construct()
@@ -45,11 +47,17 @@ abstract class AbstractRepository
      * @return array<string, string>
      * @throws RepositoryException
      */
-    public function getColumnSetters(bool $excludePrimaryKey = false): array
+    public function getColumnSetters(bool $excludePrimaryKey = false, bool $excludeForeignKeys = false): array
     {
         $setters = $this->columnSetters;
         if ($excludePrimaryKey) {
             unset($setters[$this->primaryKeyName]);
+        }
+
+        if ($excludeForeignKeys) {
+            foreach ($this->getForeignKeys() as $foreignKey) {
+                unset($setters[$foreignKey]);
+            }
         }
         if (empty($setters)) {
             throw new RepositoryException(sprintf('There are no columnSetters for "%s" repository', $this->getEntityName()));
@@ -360,5 +368,13 @@ abstract class AbstractRepository
             );
         }
         return $query;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getForeignKeys(): array
+    {
+        return array_values($this->foreignKeys);
     }
 }

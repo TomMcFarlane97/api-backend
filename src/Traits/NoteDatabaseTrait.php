@@ -12,13 +12,13 @@ trait NoteDatabaseTrait
     protected array $columnSetters = [
         'id' => null,
         'note' => 'setNote',
-        'user_id' => 'setUser',
+        'user_id' => 'setUserId',
     ];
 
     /** @var array<string, string>  */
     protected array $columnGetters = [
         'id' => 'getId',
         'note' => 'getNote',
-        'user_id' => 'getUser',
+        'user_id' => 'getUserId',
     ];
 }

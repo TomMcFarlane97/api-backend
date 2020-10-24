@@ -8,6 +8,7 @@ use App\Exceptions\ImANumptyException;
 use App\Exceptions\RepositoryException;
 use App\Exceptions\RequestException;
 use App\Service\UserService;
+use JsonException;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -80,7 +81,7 @@ class UserController extends AbstractController
      * @param RequestInterface $request
      * @param ResponseInterface $response
      * @return ResponseInterface
-     * @throws EntityException
+     * @throws EntityException|JsonException
      */
     public function createUser(RequestInterface $request, ResponseInterface $response): ResponseInterface
     {
@@ -111,7 +112,7 @@ class UserController extends AbstractController
      * @param ResponseInterface $response
      * @param string[] $args
      * @return ResponseInterface
-     * @throws EntityException
+     * @throws EntityException|JsonException
      */
     public function updateUser(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {

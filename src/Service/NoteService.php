@@ -8,15 +8,24 @@ use App\Exceptions\DatabaseException;
 use App\Exceptions\RepositoryException;
 use App\Exceptions\RequestException;
 use App\Repository\NoteRepository;
+use App\Traits\BuildEntityLoopTrait;
+use App\Traits\ValidSetterTrait;
 
+/**
+ * Class NoteService
+ * @package App\Service
+ * @method Note buildEntity(string $entityString, array $entityBody, array $columnSetters, bool $isUpdate = false, Note $currentEntity = null): Note
+ */
 class NoteService
 {
-    private NoteRepository $notesRepository;
+    use BuildEntityLoopTrait;
+
+    private NoteRepository $repository;
     private UserService $userService;
 
     public function __construct(NoteRepository $notesRepository, UserService $userService)
     {
-        $this->notesRepository = $notesRepository;
+        $this->repository = $notesRepository;
         $this->userService = $userService;
     }
 
@@ -27,7 +36,7 @@ class NoteService
      */
     public function getAllNotesForUser(int $userId): array
     {
-        return $this->notesRepository->findBy([
+        return $this->repository->findBy([
             'user_id' => $this->userService->retrieveUser($userId)->getId(),
         ]);
     }
@@ -40,10 +49,11 @@ class NoteService
      */
     public function getNoteFromUser(int $userId, int $noteId): Note
     {
-        $note = $this->notesRepository->findOneBy([
+        $note = $this->repository->findOneBy([
             'id' => $noteId,
             'user_id' => $this->userService->retrieveUser($userId)->getId(),
         ]);
+
         if (!$note) {
             throw new RequestException(
                 sprintf('Unable to find note "%s", for user "%s"', $noteId, $userId),
@@ -52,5 +62,22 @@ class NoteService
         }
 
         return $note;
+    }
+
+    /**
+     * @param array<string, mixed> $noteBody
+     * @return Note
+     * @throws DatabaseException|RepositoryException
+     */
+    public function createNote(int $userId, array $noteBody): Note
+    {
+        $user = $this->userService->retrieveUser($userId);
+        $note = $this->buildEntity(
+            $this->repository->getEntityName(),
+            $noteBody,
+            $this->repository->getColumnSetters(true, true),
+        );
+        $note->setUserId($user->getId());
+        return $this->repository->createNote($note);
     }
 }

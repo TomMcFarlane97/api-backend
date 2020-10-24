@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Note;
+use App\Exceptions\DatabaseException;
+use App\Exceptions\RepositoryException;
 use App\Traits\NoteDatabaseTrait;
 
 /**
@@ -21,6 +23,21 @@ class NoteRepository extends AbstractRepository
     protected string $tableName = 'notes';
     protected string $primaryKeyName = 'id';
     protected string $entityName = Note::class;
+    /** @var string[] */
+    protected array $foreignKeys = ['user_id'];
 
     use NoteDatabaseTrait;
+
+    /**
+     * @param Note $note
+     * @return Note
+     * @throws DatabaseException|RepositoryException
+     */
+    public function createNote(Note $note): Note
+    {
+        return $this->insertSingle(
+            $this->getColumnKeysAsString(true),
+            $this->getColumnValues($note)
+        );
+    }
 }
