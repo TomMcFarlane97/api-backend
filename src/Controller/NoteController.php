@@ -113,11 +113,31 @@ class NoteController extends AbstractController
      * @param ResponseInterface $response
      * @param string[] $args
      * @return ResponseInterface
+     * @throws EntityException|JsonException
      */
     public function updateNote(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
+        try {
+            $this->validateRequestIsJson($request);
+            $user = $this->noteService->updateNote(
+                (int) $args['userId'],
+                (int) $args['noteId'],
+                json_decode(
+                    $request->getBody()->getContents(),
+                    true,
+                    512,
+                    JSON_THROW_ON_ERROR
+                )
+            );
+        } catch (RequestException|DatabaseException|RepositoryException $exception) {
+            return new JsonResponse(
+                $this->getMessage($exception),
+                $exception->getCode(),
+                $this->jsonResponseHeader
+            );
+        }
         return new JsonResponse(
-            ['message' => '@todo - populate ' . __METHOD__],
+            $user->convertToArray(),
             self::ACCEPTED,
             $this->jsonResponseHeader
         );

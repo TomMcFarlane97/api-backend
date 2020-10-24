@@ -65,9 +65,10 @@ class NoteService
     }
 
     /**
+     * @param int $userId
      * @param array<string, mixed> $noteBody
      * @return Note
-     * @throws DatabaseException|RepositoryException
+     * @throws DatabaseException|RepositoryException|RequestException
      */
     public function createNote(int $userId, array $noteBody): Note
     {
@@ -79,5 +80,25 @@ class NoteService
         );
         $note->setUserId($user->getId());
         return $this->repository->createNote($note);
+    }
+
+    /**
+     * @param int $userId
+     * @param int $noteId
+     * @param array<string, mixed> $noteBody
+     * @return Note
+     * @throws DatabaseException|RepositoryException|RequestException
+     */
+    public function updateNote(int $userId, int $noteId, array $noteBody): Note
+    {
+        $user = $this->userService->retrieveUser($userId);
+        $note = $this->buildEntity(
+            $this->repository->getEntityName(),
+            $noteBody,
+            $this->repository->getColumnSetters(true, true),
+            true,
+            $this->getNoteFromUser($user->getId(), $noteId)
+        );
+        return $this->repository->updateNote($note);
     }
 }

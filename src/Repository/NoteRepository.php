@@ -40,4 +40,17 @@ class NoteRepository extends AbstractRepository
             $this->getColumnValues($note)
         );
     }
+
+    /**
+     * @param Note $note
+     * @return Note
+     * @throws DatabaseException|RepositoryException
+     */
+    public function updateNote(Note $note): Note
+    {
+        return $this->updateSingleByPrimaryKey(
+            $note->getId(),
+            $this->getColumnValues($note, true)
+        );
+    }
 }
