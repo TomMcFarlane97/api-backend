@@ -10,14 +10,15 @@ use Psr\Http\Message\RequestInterface;
 
 abstract class AbstractController
 {
+    public const ACCEPTED = 200;
+    public const BAD_REQUEST = 400;
+    public const UNSUPPORTED_MIME_TYPE = 415;
+    public const TEA_POT = 418;
+    public const UNPROCESSABLE_ENTITY = 422;
+    public const CREATED = 201;
+    public const INTERNAL_SERVER_ERROR = 500;
+    public const NOT_IMPLEMENTED = 501;
     protected const JSON = 'application/json';
-    protected const ACCEPTED = 200;
-    protected const BAD_REQUEST = 400;
-    protected const UNSUPPORTED_MIME_TYPE = 415;
-    protected const TEA_POT = 418;
-    protected const UNPROCESSABLE_ENTITY = 422;
-    protected const CREATED = 201;
-    protected const INTERNAL_SERVER_ERROR = 500;
     protected const HEADER_CONTENT_TYPE = 'Content-type';
     private const HEADER_ACCEPT = 'Accept';
 

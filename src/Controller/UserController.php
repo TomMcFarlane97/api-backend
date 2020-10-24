@@ -86,12 +86,37 @@ class UserController extends AbstractController
     /**
      * @param RequestInterface $request
      * @param ResponseInterface $response
-     * @param string[] $args
      * @return ResponseInterface
+     * @throws EntityException
      */
-    public function createUser(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    public function createUser(RequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        return new JsonResponse(['message' => '@todo - configure ' . __METHOD__], self::ACCEPTED, $this->jsonResponseHeader);
+        try {
+            $this->validateRequestIsJson($request);
+            $user = $this->userService->createUser(json_decode(
+                $request->getBody()->getContents(),
+                true,
+                512,
+                JSON_THROW_ON_ERROR
+            ));
+        } catch (RequestException $exception) {
+            return new JsonResponse(
+                ['message' => $exception->getMessage()],
+                $exception->getCode(),
+                $this->jsonResponseHeader
+            );
+        } catch (Throwable $exception) {
+            return new JsonResponse(
+                ['message' => $exception->getMessage()],
+                self::INTERNAL_SERVER_ERROR,
+                $this->jsonResponseHeader
+            );
+        }
+        return new JsonResponse(
+            $user->convertToArray(),
+            self::ACCEPTED,
+            $this->jsonResponseHeader
+        );
     }
 
     /**
