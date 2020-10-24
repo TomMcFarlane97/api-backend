@@ -1,12 +1,26 @@
 <?php
 
 use App\Controller\UserController;
+use App\Controller\NoteController;
 use Slim\Routing\RouteCollectorProxy;
 
-$app->group('/user', function(RouteCollectorProxy $group) {
+$userRoute = '/user';
+$specificUserRoute = $userRoute . '/{userId}';
+$notesRoute = $specificUserRoute . '/notes';
+$specificNotesRoute = $notesRoute . '/{noteId}';
+
+$app->group($userRoute, function(RouteCollectorProxy $group) use ($specificUserRoute) {
     $group->get('', UserController::class . ':getAll');
     $group->post('', UserController::class . ':createUser');
-    $group->get('/{userId}', UserController::class . ':getUser');
-    $group->patch('/{userId}', UserController::class . ':updateUser');
-    $group->delete('/{userId}', UserController::class . ':deleteUser');
+    $group->get($specificUserRoute, UserController::class . ':getUser');
+    $group->patch($specificUserRoute, UserController::class . ':updateUser');
+    $group->delete($specificUserRoute, UserController::class . ':deleteUser');
+});
+
+$app->group($notesRoute, function(RouteCollectorProxy $group) use ($specificNotesRoute) {
+    $group->get('', NoteController::class . ':getAll');
+    $group->post('', NoteController::class . ':createNote');
+    $group->get($specificNotesRoute, NoteController::class . ':getNote');
+    $group->patch($specificNotesRoute, NoteController::class . ':updateNote');
+    $group->delete($specificNotesRoute, NoteController::class . ':deleteNote');
 });

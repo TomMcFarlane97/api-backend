@@ -11,7 +11,6 @@ use App\Validators\EmailAddressValidator;
 /**
  * Class User
  * @package App\Entity
- * @todo - figure out how to "magically" convert snake case db characters to camelCase
  */
 class User implements ConvertToArrayInterface
 {
