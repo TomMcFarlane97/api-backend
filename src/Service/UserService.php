@@ -41,7 +41,7 @@ class UserService
     /**
      * @param array<string, mixed> $userBody
      * @return User
-     * @throws RepositoryException|RequestException
+     * @throws RepositoryException|RequestException|DatabaseException
      */
     public function createUser(array $userBody): User
     {
@@ -49,23 +49,47 @@ class UserService
     }
 
     /**
+     * @param int $userId
      * @param array<string, mixed> $userBody
      * @return User
-     * @throws RepositoryException|RequestException
+     * @throws DatabaseException|RepositoryException|RequestException
      */
-    private function mergeUserBodyToObject(array $userBody): User
+    public function updateUser(int $userId, array $userBody): User
+    {
+        $user = $this->getUserById($userId);
+        if (!$user) {
+            throw new RequestException(sprintf('User ID of "%s" was not found', $userId), AbstractController::BAD_REQUEST);
+        }
+        return $this->userRepository->updateUser(
+            $this->mergeUserBodyToObject(
+                $userBody,
+                true,
+                $user
+            )
+        );
+    }
+
+    /**
+     * @param array<string, mixed> $userBody
+     * @param bool $isUpdate
+     * @param User|null $currentUser
+     * @return User
+     * @throws RepositoryException
+     * @throws RequestException
+     */
+    private function mergeUserBodyToObject(array $userBody, bool $isUpdate = false, User $currentUser = null): User
     {
         $columnSetters = $this->userRepository->getColumnSetters(true);
         $entity = $this->userRepository->getEntityName();
         /** @var User $user */
-        $user = new $entity();
+        $user = $currentUser ? $currentUser : new $entity();
         foreach ($userBody as $columnKey => $columnValue) {
             $this->throwErrorIfNotValidSetter($columnSetters, $columnKey, $entity, $user);
             $user->{$columnSetters[$columnKey]}($columnValue);
             unset($columnSetters[$columnKey]);
         }
 
-        if (!empty($columnSetters)) {
+        if (!$isUpdate && !empty($columnSetters)) {
             throw new RequestException(
                 sprintf(
                     'Body of request does not contain the following values %s',
@@ -92,11 +116,14 @@ class UserService
         ConvertToArrayInterface $entityObject
     ): void {
         if (empty($columnSetters[$columnKey])) {
-            throw new RequestException(sprintf(
-                'Key name "%s" is not valid, the only valid key names are: %s',
-                $columnKey,
-                $this->userRepository->getColumnKeysAsString()
-            ));
+            throw new RequestException(
+                sprintf(
+                    'Key name "%s" is not valid, the only valid key names are: %s',
+                    $columnKey,
+                    $this->userRepository->getColumnKeysAsString(true)
+                ),
+                AbstractController::UNPROCESSABLE_ENTITY
+            );
         }
 
         $method = $columnSetters[$columnKey];

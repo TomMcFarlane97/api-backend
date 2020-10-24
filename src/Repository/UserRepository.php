@@ -14,6 +14,7 @@ use App\Traits\UserDatabaseTrait;
  * @method null|User find(int $id): ?User
  * @method User[] findAll(): User[]
  * @method User insertSingle(string $columnNames, string $columnValues): User
+ * @method User updateSingleByPrimaryKey(int $primaryKeyValue, string $updatedValues): User
  */
 class UserRepository extends AbstractRepository
 {
@@ -51,6 +52,39 @@ class UserRepository extends AbstractRepository
         }
         return $this->insertSingle(
             $this->getColumnKeysAsString(true),
+            rtrim($columnValues, ',')
+        );
+    }
+
+    /**
+     * @param User $user
+     * @return User
+     * @throws DatabaseException|RepositoryException
+     */
+    public function updateUser(User $user): User
+    {
+        $columnValues = '';
+        $getters = $this->getColumnGetters(true);
+        foreach ($this->getColumnKeys(true) as $key) {
+            if (empty($getters[$key])) {
+                throw new RepositoryException(
+                    sprintf('Key "%s" does not exist on the columnGetters', $key),
+                    AbstractController::INTERNAL_SERVER_ERROR
+                );
+            }
+
+            $method = $getters[$key];
+            if (!method_exists($user, $method)) {
+                throw new RepositoryException(
+                    sprintf('Getter "%s" does not exist on the entity "%s"', $method, get_class($user)),
+                    AbstractController::INTERNAL_SERVER_ERROR
+                );
+            }
+            $columnValues = $columnValues . " " . $key . " = '" . $user->{$method}() . "',";
+        }
+
+        return $this->updateSingleByPrimaryKey(
+            $user->getId(),
             rtrim($columnValues, ',')
         );
     }

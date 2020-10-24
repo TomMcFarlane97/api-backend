@@ -175,6 +175,29 @@ abstract class AbstractRepository
     }
 
     /**
+     * @param int $primaryKeyValue
+     * @param string $updatedValues
+     * @return ConvertToArrayInterface
+     * @throws DatabaseException|RepositoryException
+     */
+    protected function updateSingleByPrimaryKey(int $primaryKeyValue, string $updatedValues): ConvertToArrayInterface
+    {
+        $queryString = sprintf(
+            'UPDATE %s SET %s WHERE %s = %s',
+            $this->getTableName(),
+            $updatedValues,
+            $this->primaryKeyName,
+            $primaryKeyValue
+        );
+        $query = $this->getPDOStatement($queryString);
+        if (!$query->execute()) {
+            throw new DatabaseException($query->errorCode());
+        }
+
+        return $this->find($primaryKeyValue);
+    }
+
+    /**
      * @return string
      * @throws RepositoryException
      */
