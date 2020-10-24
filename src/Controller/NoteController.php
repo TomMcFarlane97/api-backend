@@ -2,22 +2,47 @@
 
 namespace App\Controller;
 
+use App\Exceptions\DatabaseException;
+use App\Exceptions\EntityException;
+use App\Exceptions\ImANumptyException;
+use App\Exceptions\RepositoryException;
+use App\Exceptions\RequestException;
+use App\Service\NoteService;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class NoteController extends AbstractController
 {
+    private NoteService $noteService;
+
+    public function __construct(NoteService $noteService)
+    {
+        $this->noteService = $noteService;
+    }
+
     /**
      * @param RequestInterface $request
      * @param ResponseInterface $response
      * @param string[] $args
      * @return ResponseInterface
+     * @throws EntityException|ImANumptyException
      */
     public function getAll(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
+        try {
+            $this->validateRequestIsJson($request);
+            $notes = $this->noteService->getAllNotesForUser((int) $args['userId']);
+        } catch (RequestException|DatabaseException|RepositoryException $exception) {
+            echo $exception->getMessage(); exit;
+            return new JsonResponse(
+                $this->getMessage($exception),
+                $exception->getCode(),
+                $this->jsonResponseHeader
+            );
+        }
         return new JsonResponse(
-            ['message' => '@todo - populate ' . __METHOD__],
+            [self::convertObjectToArray($notes)],
             self::ACCEPTED,
             $this->jsonResponseHeader
         );

@@ -31,7 +31,6 @@ class UserRepository extends AbstractRepository
      */
     public function createUser(User $user): User
     {
-        $columnValues = '';
         return $this->insertSingle(
             $this->getColumnKeysAsString(true),
             $this->getColumnValues($user)

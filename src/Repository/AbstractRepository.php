@@ -9,7 +9,6 @@ use App\Factory\DatabaseFactory;
 use App\Interfaces\ConvertToArrayInterface;
 use PDO;
 use PDOStatement;
-use phpDocumentor\Reflection\Types\Null_;
 
 /**
  * Class AbstractRepository
@@ -90,7 +89,10 @@ abstract class AbstractRepository
         ));
         $query = $this->getPDOStatement($queryString);
         if (!$query->execute()) {
-            throw new DatabaseException($query->errorCode());
+            throw new DatabaseException(
+                sprintf($query->errorCode() . ' BAD SQL - "%s"', $queryString),
+                AbstractController::INTERNAL_SERVER_ERROR
+            );
         }
         $object = $query->fetchObject($this->getEntityName());
         if ($object) {
@@ -108,7 +110,10 @@ abstract class AbstractRepository
         $queryString = sprintf('SELECT %s FROM %s', $this->getColumnKeysAsString(), $this->getTableName());
         $query = $this->getPDOStatement($queryString);
         if (!$query->execute()) {
-            throw new DatabaseException($query->errorCode());
+            throw new DatabaseException(
+                sprintf($query->errorCode() . ' BAD SQL - "%s"', $queryString),
+                AbstractController::INTERNAL_SERVER_ERROR
+            );
         }
         $query = $query->fetchAll(PDO::FETCH_CLASS, $this->getEntityName());
         if ($query === false) {
@@ -170,10 +175,46 @@ abstract class AbstractRepository
         );
         $query = $this->getPDOStatement($queryString);
         if (!$query->execute()) {
-            throw new DatabaseException($query->errorCode());
+            throw new DatabaseException(
+                sprintf($query->errorCode() . ' BAD SQL - "%s"', $queryString),
+                AbstractController::INTERNAL_SERVER_ERROR
+            );
         }
 
         return $this->find((int) $this->connection->lastInsertId());
+    }
+
+    /**
+     * @param array<string, string|int> $whereConditions
+     * @param int|null $limit
+     * @return ConvertToArrayInterface[]
+     * @throws RepositoryException|DatabaseException
+     */
+    public function findBy(array $whereConditions = [], int $limit = null): array
+    {
+        $queryString = sprintf(
+            'SELECT %s FROM %s WHERE %s %s',
+            $this->getColumnKeysAsString(),
+            $this->getTableName(),
+            $this->getSearchFromConditions($whereConditions, true),
+            $limit ? ' LIMIT ' . $limit : ''
+        );
+        $query = $this->getPDOStatement($queryString);
+        if (!$query->execute()) {
+            throw new DatabaseException(
+                sprintf($query->errorCode() . ' BAD SQL - "%s"', $queryString),
+                AbstractController::INTERNAL_SERVER_ERROR
+            );
+        }
+        $query = $query->fetchAll(PDO::FETCH_CLASS, $this->getEntityName());
+        if ($query === false) {
+            throw new DatabaseException(sprintf(
+                'Internal Database error trying to retrieve the results on method "%s" and line "%s"',
+                __METHOD__,
+                __LINE__
+            ));
+        }
+        return $query;
     }
 
     /**
@@ -191,7 +232,10 @@ abstract class AbstractRepository
         );
         $query = $this->getPDOStatement($queryString);
         if (!$query->execute()) {
-            throw new DatabaseException($query->errorCode());
+            throw new DatabaseException(
+                sprintf($query->errorCode() . ' BAD SQL - "%s"', $queryString),
+                AbstractController::INTERNAL_SERVER_ERROR
+            );
         }
 
         if ($this->find($primaryKeyValue)) {
@@ -223,7 +267,10 @@ abstract class AbstractRepository
         );
         $query = $this->getPDOStatement($queryString);
         if (!$query->execute()) {
-            throw new DatabaseException($query->errorCode());
+            throw new DatabaseException(
+                sprintf($query->errorCode() . ' BAD SQL - "%s"', $queryString),
+                AbstractController::INTERNAL_SERVER_ERROR
+            );
         }
 
         return $this->find($primaryKeyValue);
@@ -260,6 +307,35 @@ abstract class AbstractRepository
                 $columnValues . "'" . $entity->{$method}() . "',";
         }
         return rtrim($columnValues, ',');
+    }
+
+    /**
+     * @param array<string, string|int> $conditions
+     * @param bool $isAndClause
+     * @return string
+     * @throws RepositoryException
+     */
+    protected function getSearchFromConditions(array $conditions, bool $isAndClause = false): string
+    {
+        $joinCondition = $isAndClause ? ' AND ' : ' OR ';
+        $condition = '';
+        foreach ($this->getColumnKeys() as $key) {
+            if (!isset($conditions[$key])) {
+                continue;
+            }
+
+            $condition = $condition . $key . ' = ' . '"' . $conditions[$key] . '"' . $joinCondition;
+            unset($conditions[$key]);
+        }
+
+        if (!empty($conditions)) {
+            throw new RepositoryException(
+                sprintf('Unknown columns in query "%s"', implode(',', array_keys($conditions))),
+                AbstractController::INTERNAL_SERVER_ERROR
+            );
+        }
+
+        return rtrim($condition, $joinCondition);
     }
 
     /**

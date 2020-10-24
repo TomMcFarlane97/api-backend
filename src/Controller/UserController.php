@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Exceptions\DatabaseException;
 use App\Exceptions\EntityException;
 use App\Exceptions\ImANumptyException;
+use App\Exceptions\RepositoryException;
 use App\Exceptions\RequestException;
 use App\Service\UserService;
 use Laminas\Diactoros\Response\JsonResponse;
@@ -31,16 +33,10 @@ class UserController extends AbstractController
         try {
             $this->validateRequestIsJson($request);
             $users = $this->userService->getAllUsers();
-        } catch (RequestException $exception) {
+        } catch (RequestException|DatabaseException|RepositoryException $exception) {
             return new JsonResponse(
                 $this->getMessage($exception),
                 $exception->getCode(),
-                $this->jsonResponseHeader
-            );
-        } catch (Throwable $exception) {
-            return new JsonResponse(
-                $this->getMessage($exception),
-                self::INTERNAL_SERVER_ERROR,
                 $this->jsonResponseHeader
             );
         }
@@ -66,16 +62,10 @@ class UserController extends AbstractController
             if (!$user) {
                 throw new RequestException(sprintf('User ID "%s" does not exist', $args['userId']), self::BAD_REQUEST);
             }
-        } catch (RequestException $exception) {
+        } catch (RequestException|DatabaseException|RepositoryException $exception) {
             return new JsonResponse(
                 $this->getMessage($exception),
                 $exception->getCode(),
-                $this->jsonResponseHeader
-            );
-        } catch (Throwable $exception) {
-            return new JsonResponse(
-                $this->getMessage($exception),
-                self::INTERNAL_SERVER_ERROR,
                 $this->jsonResponseHeader
             );
         }
@@ -102,16 +92,10 @@ class UserController extends AbstractController
                 512,
                 JSON_THROW_ON_ERROR
             ));
-        } catch (RequestException $exception) {
+        } catch (RequestException|DatabaseException|RepositoryException $exception) {
             return new JsonResponse(
                 $this->getMessage($exception),
                 $exception->getCode(),
-                $this->jsonResponseHeader
-            );
-        } catch (Throwable $exception) {
-            return new JsonResponse(
-                $this->getMessage($exception),
-                self::INTERNAL_SERVER_ERROR,
                 $this->jsonResponseHeader
             );
         }
@@ -142,16 +126,10 @@ class UserController extends AbstractController
                     JSON_THROW_ON_ERROR
                 )
             );
-        } catch (RequestException $exception) {
+        } catch (RequestException|DatabaseException|RepositoryException $exception) {
             return new JsonResponse(
                 $this->getMessage($exception),
                 $exception->getCode(),
-                $this->jsonResponseHeader
-            );
-        } catch (Throwable $exception) {
-            return new JsonResponse(
-                $this->getMessage($exception),
-                self::INTERNAL_SERVER_ERROR,
                 $this->jsonResponseHeader
             );
         }
@@ -173,16 +151,10 @@ class UserController extends AbstractController
         try {
             $this->validateRequestIsJson($request);
             $this->userService->deleteUser((int) $args['userId']);
-        } catch (RequestException $exception) {
+        } catch (RequestException|DatabaseException|RepositoryException $exception) {
             return new JsonResponse(
                 $this->getMessage($exception),
                 $exception->getCode(),
-                $this->jsonResponseHeader
-            );
-        } catch (Throwable $exception) {
-            return new JsonResponse(
-                $this->getMessage($exception),
-                self::INTERNAL_SERVER_ERROR,
                 $this->jsonResponseHeader
             );
         }

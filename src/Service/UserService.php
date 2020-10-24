@@ -82,7 +82,7 @@ class UserService
      * @return User
      * @throws DatabaseException|RepositoryException|RequestException
      */
-    private function retrieveUser(int $userId): User
+    public function retrieveUser(int $userId): User
     {
         $user = $this->getUserById($userId);
         if (!$user) {
