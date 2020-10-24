@@ -170,6 +170,26 @@ class UserController extends AbstractController
      */
     public function deleteUser(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        return new JsonResponse(['message' => '@todo - configure ' . __METHOD__], self::ACCEPTED, $this->jsonResponseHeader);
+        try {
+            $this->validateRequestIsJson($request);
+            $this->userService->deleteUser((int) $args['userId']);
+        } catch (RequestException $exception) {
+            return new JsonResponse(
+                $this->getMessage($exception),
+                $exception->getCode(),
+                $this->jsonResponseHeader
+            );
+        } catch (Throwable $exception) {
+            return new JsonResponse(
+                $this->getMessage($exception),
+                self::INTERNAL_SERVER_ERROR,
+                $this->jsonResponseHeader
+            );
+        }
+        return new JsonResponse(
+            [],
+            self::ACCEPTED,
+            $this->jsonResponseHeader
+        );
     }
 }

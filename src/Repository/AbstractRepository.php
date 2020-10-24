@@ -9,6 +9,7 @@ use App\Factory\DatabaseFactory;
 use App\Interfaces\ConvertToArrayInterface;
 use PDO;
 use PDOStatement;
+use phpDocumentor\Reflection\Types\Null_;
 
 /**
  * Class AbstractRepository
@@ -173,6 +174,36 @@ abstract class AbstractRepository
         }
 
         return $this->find((int) $this->connection->lastInsertId());
+    }
+
+    /**
+     * @param int $primaryKeyValue
+     * @return void
+     * @throws DatabaseException|RepositoryException
+     */
+    protected function deleteItem(int $primaryKeyValue): void
+    {
+        $queryString = sprintf(
+            'DELETE FROM %s WHERE %s = %s',
+            $this->getTableName(),
+            $this->primaryKeyName,
+            $primaryKeyValue
+        );
+        $query = $this->getPDOStatement($queryString);
+        if (!$query->execute()) {
+            throw new DatabaseException($query->errorCode());
+        }
+
+        if ($this->find($primaryKeyValue)) {
+            throw new DatabaseException(
+                sprintf(
+                    'Row with primary key value of "%s" has not been deleted from table "%s"',
+                    $primaryKeyValue,
+                    $this->getTableName()
+                ),
+                AbstractController::INTERNAL_SERVER_ERROR
+            );
+        }
     }
 
     /**

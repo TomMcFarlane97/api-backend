@@ -66,22 +66,6 @@ abstract class AbstractController
     }
 
     /**
-     * @param array<int, string[]>|ConvertToArrayInterface[]|string[] $message
-     * @param bool $canConvertToArray
-     * @return string
-     * @throws EntityException
-     * @throws ImANumptyException
-     */
-    protected static function jsonEncodeArray(array $message, bool $canConvertToArray = false): string
-    {
-        $message = $canConvertToArray ? self::jsonEncodeArray(self::convertObjectToArray($message)) : json_encode($message);
-        if ($message === false) {
-            throw new ImANumptyException('Can you even code bro', self::TEA_POT);
-        }
-        return $message;
-    }
-
-    /**
      * @param array<ConvertToArrayInterface|array<string>|string> $entities
      * @return array<int, array<string, mixed>>
      * @throws EntityException|ImANumptyException

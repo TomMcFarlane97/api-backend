@@ -56,17 +56,39 @@ class UserService
      */
     public function updateUser(int $userId, array $userBody): User
     {
-        $user = $this->getUserById($userId);
-        if (!$user) {
-            throw new RequestException(sprintf('User ID of "%s" was not found', $userId), AbstractController::BAD_REQUEST);
-        }
         return $this->userRepository->updateUser(
             $this->mergeUserBodyToObject(
                 $userBody,
                 true,
-                $user
+                $this->retrieveUser($userId)
             )
         );
+    }
+
+    /**
+     * @param int $userId
+     * @return void
+     * @throws DatabaseException|RepositoryException|RequestException
+     */
+    public function deleteUser(int $userId): void
+    {
+        $this->userRepository->deleteUser(
+            $this->retrieveUser($userId)
+        );
+    }
+
+    /**
+     * @param int $userId
+     * @return User
+     * @throws DatabaseException|RepositoryException|RequestException
+     */
+    private function retrieveUser(int $userId): User
+    {
+        $user = $this->getUserById($userId);
+        if (!$user) {
+            throw new RequestException(sprintf('User ID of "%s" was not found', $userId), AbstractController::BAD_REQUEST);
+        }
+        return $user;
     }
 
     /**

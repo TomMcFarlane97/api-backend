@@ -2,7 +2,6 @@
 
 namespace App\Repository;
 
-use App\Controller\AbstractController;
 use App\Entity\User;
 use App\Exceptions\DatabaseException;
 use App\Exceptions\RepositoryException;
@@ -15,6 +14,7 @@ use App\Traits\UserDatabaseTrait;
  * @method User[] findAll(): User[]
  * @method User insertSingle(string $columnNames, string $columnValues): User
  * @method User updateSingleByPrimaryKey(int $primaryKeyValue, string $updatedValues): User
+ * @method null deleteItem(int $primaryKeyValue): User
  */
 class UserRepository extends AbstractRepository
 {
@@ -49,5 +49,15 @@ class UserRepository extends AbstractRepository
             $user->getId(),
             $this->getColumnValues($user, true)
         );
+    }
+
+    /**
+     * @param User $user
+     * @return void
+     * @throws DatabaseException|RepositoryException
+     */
+    public function deleteUser(User $user): void
+    {
+        $this->deleteItem($user->getId());
     }
 }
