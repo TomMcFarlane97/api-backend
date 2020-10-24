@@ -87,14 +87,8 @@ abstract class AbstractRepository
             $this->getTableName(),
             $id
         ));
-        $query = $this->getPDOStatement($queryString);
-        if (!$query->execute()) {
-            throw new DatabaseException(
-                sprintf($query->errorCode() . ' BAD SQL - "%s"', $queryString),
-                AbstractController::INTERNAL_SERVER_ERROR
-            );
-        }
-        $object = $query->fetchObject($this->getEntityName());
+        $object = $this->getPDOStatementAndExecute($queryString)
+            ->fetchObject($this->getEntityName());
         if ($object) {
             return $object;
         }
@@ -108,14 +102,8 @@ abstract class AbstractRepository
     public function findAll(): array
     {
         $queryString = sprintf('SELECT %s FROM %s', $this->getColumnKeysAsString(), $this->getTableName());
-        $query = $this->getPDOStatement($queryString);
-        if (!$query->execute()) {
-            throw new DatabaseException(
-                sprintf($query->errorCode() . ' BAD SQL - "%s"', $queryString),
-                AbstractController::INTERNAL_SERVER_ERROR
-            );
-        }
-        $query = $query->fetchAll(PDO::FETCH_CLASS, $this->getEntityName());
+        $query = $this->getPDOStatementAndExecute($queryString)
+            ->fetchAll(PDO::FETCH_CLASS, $this->getEntityName());
         if ($query === false) {
             throw new DatabaseException(sprintf(
                 'Internal Database error trying to retrieve the results on method "%s" and line "%s"',
@@ -173,14 +161,7 @@ abstract class AbstractRepository
             $columnNames,
             $columnValues
         );
-        $query = $this->getPDOStatement($queryString);
-        if (!$query->execute()) {
-            throw new DatabaseException(
-                sprintf($query->errorCode() . ' BAD SQL - "%s"', $queryString),
-                AbstractController::INTERNAL_SERVER_ERROR
-            );
-        }
-
+        $this->getPDOStatementAndExecute($queryString);
         return $this->find((int) $this->connection->lastInsertId());
     }
 
@@ -199,14 +180,34 @@ abstract class AbstractRepository
             $this->getSearchFromConditions($whereConditions, true),
             $limit ? ' LIMIT ' . $limit : ''
         );
-        $query = $this->getPDOStatement($queryString);
-        if (!$query->execute()) {
-            throw new DatabaseException(
-                sprintf($query->errorCode() . ' BAD SQL - "%s"', $queryString),
-                AbstractController::INTERNAL_SERVER_ERROR
-            );
+        $query = $this->getPDOStatementAndExecute($queryString)
+            ->fetchAll(PDO::FETCH_CLASS, $this->getEntityName());
+        if ($query === false) {
+            throw new DatabaseException(sprintf(
+                'Internal Database error trying to retrieve the results on method "%s" and line "%s"',
+                __METHOD__,
+                __LINE__
+            ));
         }
-        $query = $query->fetchAll(PDO::FETCH_CLASS, $this->getEntityName());
+        return $query;
+    }
+
+    /**
+     * @param array<string, string|int> $whereConditions
+     * @return ConvertToArrayInterface
+     * @throws RepositoryException|DatabaseException
+     */
+    public function findOneBy(array $whereConditions = []): ConvertToArrayInterface
+    {
+        $queryString = sprintf(
+            'SELECT %s FROM %s WHERE %s %s',
+            $this->getColumnKeysAsString(),
+            $this->getTableName(),
+            $this->getSearchFromConditions($whereConditions, true),
+            ' LIMIT 1'
+        );
+        $query = $this->getPDOStatementAndExecute($queryString)
+            ->fetchObject($this->getEntityName());
         if ($query === false) {
             throw new DatabaseException(sprintf(
                 'Internal Database error trying to retrieve the results on method "%s" and line "%s"',
@@ -230,14 +231,7 @@ abstract class AbstractRepository
             $this->primaryKeyName,
             $primaryKeyValue
         );
-        $query = $this->getPDOStatement($queryString);
-        if (!$query->execute()) {
-            throw new DatabaseException(
-                sprintf($query->errorCode() . ' BAD SQL - "%s"', $queryString),
-                AbstractController::INTERNAL_SERVER_ERROR
-            );
-        }
-
+        $this->getPDOStatementAndExecute($queryString);
         if ($this->find($primaryKeyValue)) {
             throw new DatabaseException(
                 sprintf(
@@ -265,14 +259,7 @@ abstract class AbstractRepository
             $this->primaryKeyName,
             $primaryKeyValue
         );
-        $query = $this->getPDOStatement($queryString);
-        if (!$query->execute()) {
-            throw new DatabaseException(
-                sprintf($query->errorCode() . ' BAD SQL - "%s"', $queryString),
-                AbstractController::INTERNAL_SERVER_ERROR
-            );
-        }
-
+        $this->getPDOStatementAndExecute($queryString);
         return $this->find($primaryKeyValue);
     }
 
@@ -355,7 +342,7 @@ abstract class AbstractRepository
      * @return PDOStatement
      * @throws DatabaseException
      */
-    private function getPDOStatement(string $queryString): PDOStatement
+    private function getPDOStatementAndExecute(string $queryString): PDOStatement
     {
         $query = $this->connection->prepare($queryString);
         if (!$query instanceof PDOStatement) {
@@ -365,6 +352,12 @@ abstract class AbstractRepository
                 __LINE__,
                 $queryString
             ));
+        }
+        if (!$query->execute()) {
+            throw new DatabaseException(
+                sprintf($query->errorCode() . ' BAD SQL - "%s"', $queryString),
+                AbstractController::INTERNAL_SERVER_ERROR
+            );
         }
         return $query;
     }

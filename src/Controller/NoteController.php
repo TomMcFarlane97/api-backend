@@ -34,7 +34,6 @@ class NoteController extends AbstractController
             $this->validateRequestIsJson($request);
             $notes = $this->noteService->getAllNotesForUser((int) $args['userId']);
         } catch (RequestException|DatabaseException|RepositoryException $exception) {
-            echo $exception->getMessage(); exit;
             return new JsonResponse(
                 $this->getMessage($exception),
                 $exception->getCode(),
@@ -68,11 +67,22 @@ class NoteController extends AbstractController
      * @param ResponseInterface $response
      * @param string[] $args
      * @return ResponseInterface
+     * @throws EntityException
      */
     public function getNote(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
+        try {
+            $this->validateRequestIsJson($request);
+            $note = $this->noteService->getNoteFromUser((int) $args['userId'], (int) $args['noteId']);
+        } catch (RequestException|DatabaseException|RepositoryException $exception) {
+            return new JsonResponse(
+                $this->getMessage($exception),
+                $exception->getCode(),
+                $this->jsonResponseHeader
+            );
+        }
         return new JsonResponse(
-            ['message' => '@todo - populate ' . __METHOD__],
+            $note->convertToArray(),
             self::ACCEPTED,
             $this->jsonResponseHeader
         );

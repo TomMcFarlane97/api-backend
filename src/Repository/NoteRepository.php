@@ -11,6 +11,7 @@ use App\Traits\NoteDatabaseTrait;
  * @method null|Note find(int $id): ?Note
  * @method Note[] findAll(): Note[]
  * @method Note[] findBy(array $whereConditions = [], int $limit = null): Note[]
+ * @method null|Note findOneBy(array $whereConditions = []): ?Note
  * @method Note insertSingle(string $columnNames, string $columnValues): Note
  * @method Note updateSingleByPrimaryKey(int $primaryKeyValue, string $updatedValues): Note
  * @method null deleteItem(int $primaryKeyValue): null

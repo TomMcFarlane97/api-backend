@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Controller\AbstractController;
 use App\Entity\Note;
 use App\Exceptions\DatabaseException;
 use App\Exceptions\RepositoryException;
@@ -29,5 +30,27 @@ class NoteService
         return $this->notesRepository->findBy([
             'user_id' => $this->userService->retrieveUser($userId)->getId(),
         ]);
+    }
+
+    /**
+     * @param int $userId
+     * @param int $noteId
+     * @return Note
+     * @throws DatabaseException|RepositoryException|RequestException
+     */
+    public function getNoteFromUser(int $userId, int $noteId): Note
+    {
+        $note = $this->notesRepository->findOneBy([
+            'id' => $noteId,
+            'user_id' => $this->userService->retrieveUser($userId)->getId(),
+        ]);
+        if (!$note) {
+            throw new RequestException(
+                sprintf('Unable to find note "%s", for user "%s"', $noteId, $userId),
+                AbstractController::BAD_REQUEST
+            );
+        }
+
+        return $note;
     }
 }
