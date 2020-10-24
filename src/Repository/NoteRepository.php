@@ -53,4 +53,14 @@ class NoteRepository extends AbstractRepository
             $this->getColumnValues($note, true)
         );
     }
+
+    /**
+     * @param Note $note
+     * @return void
+     * @throws DatabaseException|RepositoryException
+     */
+    public function deleteNote(Note $note): void
+    {
+        $this->deleteItem($note->getId());
+    }
 }

@@ -151,8 +151,19 @@ class NoteController extends AbstractController
      */
     public function deleteNote(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
+
+        try {
+            $this->validateRequestIsJson($request);
+            $this->noteService->deleteNote((int) $args['userId'], (int) $args['noteId']);
+        } catch (RequestException|DatabaseException|RepositoryException $exception) {
+            return new JsonResponse(
+                $this->getMessage($exception),
+                $exception->getCode(),
+                $this->jsonResponseHeader
+            );
+        }
         return new JsonResponse(
-            ['message' => '@todo - populate ' . __METHOD__],
+            [],
             self::ACCEPTED,
             $this->jsonResponseHeader
         );

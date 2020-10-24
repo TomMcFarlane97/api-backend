@@ -101,4 +101,17 @@ class NoteService
         );
         return $this->repository->updateNote($note);
     }
+
+    /**
+     * @param int $userId
+     * @param int $noteId
+     * @return void
+     * @throws DatabaseException|RepositoryException|RequestException
+     */
+    public function deleteNote(int $userId, int $noteId): void
+    {
+        $this->repository->deleteNote(
+            $this->getNoteFromUser($userId, $noteId)
+        );
+    }
 }
