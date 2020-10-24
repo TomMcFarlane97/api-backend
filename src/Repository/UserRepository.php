@@ -32,27 +32,9 @@ class UserRepository extends AbstractRepository
     public function createUser(User $user): User
     {
         $columnValues = '';
-        $getters = $this->getColumnGetters(true);
-        foreach ($this->getColumnKeys(true) as $key) {
-            if (empty($getters[$key])) {
-                throw new RepositoryException(
-                    sprintf('Key "%s" does not exist on the columnGetters', $key),
-                    AbstractController::INTERNAL_SERVER_ERROR
-                );
-            }
-
-            $method = $getters[$key];
-            if (!method_exists($user, $method)) {
-                throw new RepositoryException(
-                    sprintf('Getter "%s" does not exist on the entity "%s"', $method, get_class($user)),
-                    AbstractController::INTERNAL_SERVER_ERROR
-                );
-            }
-            $columnValues = $columnValues . "'" . $user->{$method}() . "',";
-        }
         return $this->insertSingle(
             $this->getColumnKeysAsString(true),
-            rtrim($columnValues, ',')
+            $this->getColumnValues($user)
         );
     }
 
@@ -63,29 +45,9 @@ class UserRepository extends AbstractRepository
      */
     public function updateUser(User $user): User
     {
-        $columnValues = '';
-        $getters = $this->getColumnGetters(true);
-        foreach ($this->getColumnKeys(true) as $key) {
-            if (empty($getters[$key])) {
-                throw new RepositoryException(
-                    sprintf('Key "%s" does not exist on the columnGetters', $key),
-                    AbstractController::INTERNAL_SERVER_ERROR
-                );
-            }
-
-            $method = $getters[$key];
-            if (!method_exists($user, $method)) {
-                throw new RepositoryException(
-                    sprintf('Getter "%s" does not exist on the entity "%s"', $method, get_class($user)),
-                    AbstractController::INTERNAL_SERVER_ERROR
-                );
-            }
-            $columnValues = $columnValues . " " . $key . " = '" . $user->{$method}() . "',";
-        }
-
         return $this->updateSingleByPrimaryKey(
             $user->getId(),
-            rtrim($columnValues, ',')
+            $this->getColumnValues($user, true)
         );
     }
 }

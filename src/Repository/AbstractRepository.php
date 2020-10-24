@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Controller\AbstractController;
 use App\Exceptions\DatabaseException;
 use App\Exceptions\RepositoryException;
 use App\Factory\DatabaseFactory;
@@ -195,6 +196,39 @@ abstract class AbstractRepository
         }
 
         return $this->find($primaryKeyValue);
+    }
+
+    /**
+     * @param ConvertToArrayInterface $entity
+     * @param bool $entityExists
+     * @return string
+     * @throws RepositoryException
+     */
+    protected function getColumnValues(ConvertToArrayInterface $entity, bool $entityExists = false): string
+    {
+        $columnValues = '';
+        $getters = $this->getColumnGetters(true);
+        foreach ($this->getColumnKeys(true) as $key) {
+            if (empty($getters[$key])) {
+                throw new RepositoryException(
+                    sprintf('Key "%s" does not exist on the columnGetters', $key),
+                    AbstractController::INTERNAL_SERVER_ERROR
+                );
+            }
+
+            $method = $getters[$key];
+            if (!method_exists($entity, $method)) {
+                throw new RepositoryException(
+                    sprintf('Getter "%s" does not exist on the entity "%s"', $method, get_class($entity)),
+                    AbstractController::INTERNAL_SERVER_ERROR
+                );
+            }
+
+            $columnValues = $entityExists ?
+                $columnValues . " " . $key . " = '" . $entity->{$method}() . "',":
+                $columnValues . "'" . $entity->{$method}() . "',";
+        }
+        return rtrim($columnValues, ',');
     }
 
     /**
