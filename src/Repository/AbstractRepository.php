@@ -5,14 +5,17 @@ namespace App\Repository;
 use App\Exceptions\DatabaseException;
 use App\Exceptions\RepositoryException;
 use App\Factory\DatabaseFactory;
+use App\Interfaces\ConvertToArrayInterface;
 use PDO;
+use PDOStatement;
 
 /**
  * Class AbstractRepository
  * @package App\Repository
  * @property string $tableName - table name the repository is for
  * @property string $entityName - Type of Object the repository is for
- * @property array<string, string> $columns - Must be key => value for the 'name of column' => 'setter method on object'
+ * @property array<string, string> $columnSetters - Must be key => value for the 'name of column' => 'setter method on object'
+ * @property array<string, string> $columnGetters - Must be key => value for the 'name of column' => 'getter method on object'
  * @property string $primaryKeyName - Column name of primary key
  */
 abstract class AbstractRepository
@@ -25,23 +28,73 @@ abstract class AbstractRepository
     }
 
     /**
+     * @return string
+     * @throws RepositoryException
+     */
+    public function getEntityName(): string
+    {
+        if (empty($this->entityName)) {
+            throw new RepositoryException(sprintf('Entity for table "%s" is not specified in its repository.', $this->getTableName()));
+        }
+        return $this->entityName;
+    }
+
+    /**
+     * @param bool $excludePrimaryKey
+     * @return array<string, string>
+     * @throws RepositoryException
+     */
+    public function getColumnSetters(bool $excludePrimaryKey = false): array
+    {
+        $setters = $this->columnSetters;
+        if ($excludePrimaryKey) {
+            unset($setters[$this->primaryKeyName]);
+        }
+        if (empty($setters)) {
+            throw new RepositoryException(sprintf('There are no columnSetters for "%s" repository', $this->getEntityName()));
+        }
+        return $setters;
+    }
+
+    /**
+     * @param bool $excludePrimaryKey
+     * @return array<string, string>
+     * @throws RepositoryException
+     */
+    public function getColumnGetters(bool $excludePrimaryKey = false): array
+    {
+        $getters = $this->columnGetters;
+        if ($excludePrimaryKey) {
+            unset($getters[$this->primaryKeyName]);
+        }
+        if (empty($getters)) {
+            throw new RepositoryException(sprintf('There are no columnGetters for "%s" repository', $this->getEntityName()));
+        }
+        return $getters;
+    }
+
+    /**
      * @param int $id
      * @return object|null
      * @throws DatabaseException|RepositoryException
      */
     public function find(int $id): ?object
     {
-        $query = $this->connection->query(sprintf(
+        $queryString = sprintf(sprintf(
             'SELECT %s FROM %s WHERE id = %s',
-            $this->getColumnKeys(),
+            $this->getColumnKeysAsString(),
             $this->getTableName(),
             $id
         ));
-        if (!$query) {
-            throw new DatabaseException(sprintf('Internal Database error on method "%s" and line "%s"', __METHOD__, __LINE__));
+        $query = $this->getPDOStatement($queryString);
+        if (!$query->execute()) {
+            throw new DatabaseException($query->errorCode());
         }
-        $query->execute();
-        return $query->fetchObject($this->getEntityName());
+        $object = $query->fetchObject($this->getEntityName());
+        if ($object) {
+            return $object;
+        }
+        return null;
     }
 
     /**
@@ -50,11 +103,11 @@ abstract class AbstractRepository
      */
     public function findAll(): array
     {
-        $query = $this->connection->query(sprintf('SELECT %s FROM %s', $this->getColumnKeys(), $this->getTableName()));
-        if (!$query) {
-            throw new DatabaseException(sprintf('Internal Database error on method "%s" and line "%s"', __METHOD__, __LINE__));
+        $queryString = sprintf('SELECT %s FROM %s', $this->getColumnKeysAsString(), $this->getTableName());
+        $query = $this->getPDOStatement($queryString);
+        if (!$query->execute()) {
+            throw new DatabaseException($query->errorCode());
         }
-        $query->execute();
         $query = $query->fetchAll(PDO::FETCH_CLASS, $this->getEntityName());
         if ($query === false) {
             throw new DatabaseException(sprintf(
@@ -67,12 +120,13 @@ abstract class AbstractRepository
     }
 
     /**
+     * @param bool $excludePrimaryKey
      * @return string
      * @throws RepositoryException
      */
-    private function getColumnKeys(): string
+    public function getColumnKeysAsString(bool $excludePrimaryKey = false): string
     {
-        $columnsKeys = implode(',', array_keys($this->columns));
+        $columnsKeys = implode(',', $this->getColumnKeys($excludePrimaryKey));
         if (empty($columnsKeys)) {
             throw new RepositoryException(sprintf('Columns keys are empty for "%s" repository', $this->getEntityName()));
         }
@@ -80,15 +134,44 @@ abstract class AbstractRepository
     }
 
     /**
-     * @return string
+     * @param bool $excludePrimaryKey
+     * @return array
      * @throws RepositoryException
      */
-    private function getEntityName(): string
+    protected function getColumnKeys(bool $excludePrimaryKey = false): array
     {
-        if (empty($this->entityName)) {
-            throw new RepositoryException(sprintf('Entity for table "%s" is not specified in its repository.', $this->getTableName()));
+        $keys = $this->columnSetters;
+        if ($excludePrimaryKey) {
+            unset($keys[$this->primaryKeyName]);
         }
-        return $this->entityName;
+        $columnKeys = array_keys($keys);
+        if (empty($columnKeys)) {
+            throw new RepositoryException(sprintf('Columns keys are empty for "%s" repository', $this->getEntityName()));
+        }
+
+        return $columnKeys;
+    }
+
+    /**
+     * @param string $columnNames
+     * @param string $columnValues
+     * @return object|ConvertToArrayInterface
+     * @throws DatabaseException|RepositoryException
+     */
+    protected function insertSingle(string $columnNames, string $columnValues): ConvertToArrayInterface
+    {
+        $queryString = sprintf(
+            'INSERT INTO %s (%s) VALUES (%s)',
+            $this->getTableName(),
+            $columnNames,
+            $columnValues
+        );
+        $query = $this->getPDOStatement($queryString);
+        if (!$query->execute()) {
+            throw new DatabaseException($query->errorCode());
+        }
+
+        return $this->find((int) $this->connection->lastInsertId());
     }
 
     /**
@@ -101,5 +184,24 @@ abstract class AbstractRepository
             throw new RepositoryException('A repository you have just made does not contain a property for the $tableName');
         }
         return $this->tableName;
+    }
+
+    /**
+     * @param string $queryString
+     * @return PDOStatement
+     * @throws DatabaseException
+     */
+    private function getPDOStatement(string $queryString): PDOStatement
+    {
+        $query = $this->connection->prepare($queryString);
+        if (!$query instanceof PDOStatement) {
+            throw new DatabaseException(sprintf(
+                'Internal Database error on method "%s" and line "%s". Error for query string "%s"',
+                __METHOD__,
+                __LINE__,
+                $queryString
+            ));
+        }
+        return $query;
     }
 }
