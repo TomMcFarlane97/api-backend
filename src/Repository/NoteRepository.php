@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Note;
+use App\Traits\NoteDatabaseTrait;
 
 /**
  * Class NoteRepository
@@ -18,4 +19,6 @@ class NoteRepository extends AbstractRepository
     protected string $tableName = 'notes';
     protected string $primaryKeyName = 'id';
     protected string $entityName = Note::class;
+
+    use NoteDatabaseTrait;
 }
