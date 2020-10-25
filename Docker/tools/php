@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# This file is to exec into the web container and install all the dependencies through commands
+
+docker exec -it api-backend_web_1 bash
