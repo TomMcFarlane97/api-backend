@@ -1,0 +1,212 @@
+# Render yaml here - https://editor.swagger.io/
+swagger: "2.0"
+info:
+  description: "This is how to use the API backend that returns JSON"
+  version: "1.0.0"
+  title: "API Backend"
+  contact:
+    email: "tom.mcfarlane97@gmail.com"
+host: "http://localhost:8080"
+basePath: "/"
+tags:
+  - name: "user"
+    description: "Operations about user"
+    externalDocs:
+      description: "Find out more user"
+      url: "http://swagger.io"
+  - name: "note"
+    description: "Operations about note"
+    externalDocs:
+      description: "Find out about note"
+      url: "http://swagger.io"
+schemes:
+  - "http"
+paths:
+  /user:
+    get:
+      tags:
+        - "user"
+      summary: "Get all users"
+      operationId: "getAllUsers"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          description: "Get an array of user objects"
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        "201":
+          description: "Created"
+        "400":
+          description: "Bad request"
+        "415":
+          description: "Unsuported MIME Type"
+        "418":
+          description: "I am a teapot - if you code wrong this error will show"
+        "422":
+          description: "Unprocessable entity"
+        "500":
+          description: "Internal server error"
+        "501":
+          description: "Not Implemented"
+    post:
+      tags:
+        - "user"
+      summary: "Create user"
+      operationId: "createUser"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Get an array of user objects"
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        "201":
+          description: "Created"
+        "400":
+          description: "Bad request"
+        "415":
+          description: "Unsuported MIME Type"
+        "418":
+          description: "I am a teapot - if you code wrong this error will show"
+        "422":
+          description: "Unprocessable entity"
+        "500":
+          description: "Internal server error"
+        "501":
+          description: "Not Implemented"
+  /user/{userId}:
+    get:
+      tags:
+        - "user"
+      summary: "Get user"
+      operationId: "getUser"
+      produces:
+        - "application/json"
+      parameters:
+        - in: path
+          name: userId
+          type: integer
+          required: true
+          description: Numeric ID of the user to get
+        - in: "body"
+          name: "body"
+          description: "Get a user objects"
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        "201":
+          description: "Created"
+        "400":
+          description: "Bad request"
+        "415":
+          description: "Unsuported MIME Type"
+        "418":
+          description: "I am a teapot - if you code wrong this error will show"
+        "422":
+          description: "Unprocessable entity"
+        "500":
+          description: "Internal server error"
+        "501":
+          description: "Not Implemented"
+    patch:
+      tags:
+        - "user"
+      summary: "Update user"
+      operationId: "updateUser"
+      produces:
+        - "application/json"
+      parameters:
+        - in: path
+          name: userId
+          type: integer
+          required: true
+          description: Numeric ID of the user to get
+        - in: "body"
+          name: "body"
+          description: "Update a user object"
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        "201":
+          description: "Created"
+        "400":
+          description: "Bad request"
+        "415":
+          description: "Unsuported MIME Type"
+        "418":
+          description: "I am a teapot - if you code wrong this error will show"
+        "422":
+          description: "Unprocessable entity"
+        "500":
+          description: "Internal server error"
+        "501":
+          description: "Not Implemented"
+    delete:
+      tags:
+        - "user"
+      summary: "Delete user"
+      operationId: "deleteUser"
+      produces:
+        - "application/json"
+      parameters:
+        - in: path
+          name: userId
+          type: integer
+          required: true
+          description: Numeric ID of the user to get
+        - in: "body"
+          name: "body"
+          description: "Delete a user object"
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        "201":
+          description: "Created"
+        "400":
+          description: "Bad request"
+        "415":
+          description: "Unsuported MIME Type"
+        "418":
+          description: "I am a teapot - if you code wrong this error will show"
+        "422":
+          description: "Unprocessable entity"
+        "500":
+          description: "Internal server error"
+        "501":
+          description: "Not Implemented"
+definitions:
+  User:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+        readOnly: true
+      first_name:
+        type: "string"
+      last_name:
+        type: "string"
+      email_address:
+        type: "string"
+  Note:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+        readOnly: true
+      note:
+        type: "string"
+      user_id:
+        type: "integer"
+        format: "int64"
+        readOnly: true
