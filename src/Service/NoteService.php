@@ -9,13 +9,14 @@ use App\Exceptions\RepositoryException;
 use App\Exceptions\RequestException;
 use App\Repository\NoteRepository;
 use App\Traits\BuildEntityLoopTrait;
-use App\Traits\ValidSetterTrait;
 
+// phpcs:disable
 /**
  * Class NoteService
  * @package App\Service
  * @method Note buildEntity(string $entityString, array $entityBody, array $columnSetters, bool $isUpdate = false, Note $currentEntity = null): Note
  */
+// phpcs:enable
 class NoteService
 {
     use BuildEntityLoopTrait;

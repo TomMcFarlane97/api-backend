@@ -20,13 +20,13 @@ use App\Traits\NoteDatabaseTrait;
  */
 class NoteRepository extends AbstractRepository
 {
+    use NoteDatabaseTrait;
+
     protected string $tableName = 'notes';
     protected string $primaryKeyName = 'id';
     protected string $entityName = Note::class;
     /** @var string[] */
     protected array $foreignKeys = ['user_id'];
-
-    use NoteDatabaseTrait;
 
     /**
      * @param Note $note

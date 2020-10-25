@@ -83,7 +83,8 @@ trait BuildEntityLoopTrait
                     $method,
                     $entityString
                 ),
-                AbstractController::NOT_IMPLEMENTED);
+                AbstractController::NOT_IMPLEMENTED
+            );
         }
     }
 }

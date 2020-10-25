@@ -29,6 +29,13 @@ ensure your code is valid before it even runs. This reduces chances of bugs and 
 - run `./docker/tools/composer phpstan tests` - validate `tests` directory 
 - for more migration documentation, go to [PHPStan](https://phpstan.org/user-guide/getting-started) for more information
 
+## PHP_CodeSniffer
+- [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) is a PSR compliant standard library. 
+This reduces chances of bugs and helps improve coding standard overall.
+- run `./docker/tools/composer phpcs` - detect PHP coding errors
+- run `./docker/tools/composer phpcbf` - automatically fix coding standards
+- for more migration documentation, go to [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) for more information
+
 ## Contributing to the project
 - Must be PSR compliant
 - Must use OOP PHP 7.4 to programme

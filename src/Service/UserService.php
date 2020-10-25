@@ -7,15 +7,16 @@ use App\Entity\User;
 use App\Exceptions\DatabaseException;
 use App\Exceptions\RepositoryException;
 use App\Exceptions\RequestException;
-use App\Interfaces\ConvertToArrayInterface;
 use App\Repository\UserRepository;
 use App\Traits\BuildEntityLoopTrait;
 
+// phpcs:disable
 /**
  * Class UserService
  * @package App\Service
  * @method User buildEntity(string $entityString, array $entityBody, array $columnSetters, bool $isUpdate = false, User $currentEntity = null): User
  */
+// phpcs:enable
 class UserService
 {
     use BuildEntityLoopTrait;
@@ -100,7 +101,10 @@ class UserService
     {
         $user = $this->getUserById($userId);
         if (!$user) {
-            throw new RequestException(sprintf('User ID of "%s" was not found', $userId), AbstractController::BAD_REQUEST);
+            throw new RequestException(
+                sprintf('User ID of "%s" was not found', $userId),
+                AbstractController::BAD_REQUEST
+            );
         }
         return $user;
     }

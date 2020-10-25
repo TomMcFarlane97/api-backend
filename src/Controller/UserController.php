@@ -34,7 +34,7 @@ class UserController extends AbstractController
         try {
             $this->validateRequestIsJson($request);
             $users = $this->userService->getAllUsers();
-        } catch (RequestException|DatabaseException|RepositoryException $exception) {
+        } catch (RequestException | DatabaseException | RepositoryException $exception) {
             return new JsonResponse(
                 $this->getMessage($exception),
                 $exception->getCode(),
@@ -63,7 +63,7 @@ class UserController extends AbstractController
             if (!$user) {
                 throw new RequestException(sprintf('User ID "%s" does not exist', $args['userId']), self::BAD_REQUEST);
             }
-        } catch (RequestException|DatabaseException|RepositoryException $exception) {
+        } catch (RequestException | DatabaseException | RepositoryException $exception) {
             return new JsonResponse(
                 $this->getMessage($exception),
                 $exception->getCode(),
@@ -93,7 +93,7 @@ class UserController extends AbstractController
                 512,
                 JSON_THROW_ON_ERROR
             ));
-        } catch (RequestException|DatabaseException|RepositoryException $exception) {
+        } catch (RequestException | DatabaseException | RepositoryException $exception) {
             return new JsonResponse(
                 $this->getMessage($exception),
                 $exception->getCode(),
@@ -127,7 +127,7 @@ class UserController extends AbstractController
                     JSON_THROW_ON_ERROR
                 )
             );
-        } catch (RequestException|DatabaseException|RepositoryException $exception) {
+        } catch (RequestException | DatabaseException | RepositoryException $exception) {
             return new JsonResponse(
                 $this->getMessage($exception),
                 $exception->getCode(),
@@ -152,7 +152,7 @@ class UserController extends AbstractController
         try {
             $this->validateRequestIsJson($request);
             $this->userService->deleteUser((int) $args['userId']);
-        } catch (RequestException|DatabaseException|RepositoryException $exception) {
+        } catch (RequestException | DatabaseException | RepositoryException $exception) {
             return new JsonResponse(
                 $this->getMessage($exception),
                 $exception->getCode(),

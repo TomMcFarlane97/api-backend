@@ -14,12 +14,13 @@ use App\Validators\EmailAddressValidator;
  */
 class User implements ConvertToArrayInterface
 {
+    use UserDatabaseTrait;
+    use ConvertToArrayTrait;
+
     private int $id;
     private string $first_name;
     private string $last_name;
     private string $email_address;
-
-    use UserDatabaseTrait, ConvertToArrayTrait;
 
     public function getId(): int
     {

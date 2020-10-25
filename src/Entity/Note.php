@@ -8,11 +8,12 @@ use App\Traits\NoteDatabaseTrait;
 
 class Note implements ConvertToArrayInterface
 {
+    use NoteDatabaseTrait;
+    use ConvertToArrayTrait;
+
     private int $id;
     private string $note;
     private int $user_id;
-
-    use NoteDatabaseTrait, ConvertToArrayTrait;
 
     public function getId(): int
     {

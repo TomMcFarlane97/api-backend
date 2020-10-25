@@ -18,11 +18,11 @@ use App\Traits\UserDatabaseTrait;
  */
 class UserRepository extends AbstractRepository
 {
+    use UserDatabaseTrait;
+
     protected string $tableName = 'users';
     protected string $primaryKeyName = 'id';
     protected string $entityName = User::class;
-
-    use UserDatabaseTrait;
 
     /**
      * @param User $user

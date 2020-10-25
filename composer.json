@@ -41,6 +41,7 @@
     "scripts": {
         "build": ["@test", "@phpcs"],
         "phpcs": "phpcs src",
+        "phpcbf": "phpcbf src",
         "phpstan": "./vendor/bin/phpstan analyze src/ --level=7",
         "migration-create": "vendor/bin/phinx create",
         "migration-migrate": "vendor/bin/phinx migrate",

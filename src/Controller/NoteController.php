@@ -34,7 +34,7 @@ class NoteController extends AbstractController
         try {
             $this->validateRequestIsJson($request);
             $notes = $this->noteService->getAllNotesForUser((int) $args['userId']);
-        } catch (RequestException|DatabaseException|RepositoryException $exception) {
+        } catch (RequestException | DatabaseException | RepositoryException $exception) {
             return new JsonResponse(
                 $this->getMessage($exception),
                 $exception->getCode(),
@@ -68,7 +68,7 @@ class NoteController extends AbstractController
                     JSON_THROW_ON_ERROR
                 )
             );
-        } catch (RequestException|DatabaseException|RepositoryException $exception) {
+        } catch (RequestException | DatabaseException | RepositoryException $exception) {
             return new JsonResponse(
                 $this->getMessage($exception),
                 $exception->getCode(),
@@ -94,7 +94,7 @@ class NoteController extends AbstractController
         try {
             $this->validateRequestIsJson($request);
             $note = $this->noteService->getNoteFromUser((int) $args['userId'], (int) $args['noteId']);
-        } catch (RequestException|DatabaseException|RepositoryException $exception) {
+        } catch (RequestException | DatabaseException | RepositoryException $exception) {
             return new JsonResponse(
                 $this->getMessage($exception),
                 $exception->getCode(),
@@ -129,7 +129,7 @@ class NoteController extends AbstractController
                     JSON_THROW_ON_ERROR
                 )
             );
-        } catch (RequestException|DatabaseException|RepositoryException $exception) {
+        } catch (RequestException | DatabaseException | RepositoryException $exception) {
             return new JsonResponse(
                 $this->getMessage($exception),
                 $exception->getCode(),
@@ -155,7 +155,7 @@ class NoteController extends AbstractController
         try {
             $this->validateRequestIsJson($request);
             $this->noteService->deleteNote((int) $args['userId'], (int) $args['noteId']);
-        } catch (RequestException|DatabaseException|RepositoryException $exception) {
+        } catch (RequestException | DatabaseException | RepositoryException $exception) {
             return new JsonResponse(
                 $this->getMessage($exception),
                 $exception->getCode(),

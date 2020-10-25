@@ -34,7 +34,8 @@ abstract class AbstractController
     protected function validateRequestIsJson(RequestInterface $request): void
     {
         $contentType = $request->getHeader(self::HEADER_CONTENT_TYPE);
-        if (!empty($contentType[0]) && !str_contains($contentType[0], self::JSON)
+        if (
+            !empty($contentType[0]) && !str_contains($contentType[0], self::JSON)
             && !empty($request->getBody()->getContents())
         ) {
             throw new RequestException(

@@ -15,8 +15,8 @@ use PDOStatement;
  * @package App\Repository
  * @property string $tableName - table name the repository is for
  * @property string $entityName - Type of Object the repository is for
- * @property array<string, string> $columnSetters - Must be key => value for the 'name of column' => 'setter method on object'
- * @property array<string, string> $columnGetters - Must be key => value for the 'name of column' => 'getter method on object'
+ * @property array<string, string> $columnSetters - Must be key => value for the 'name of column' => 'setter method'
+ * @property array<string, string> $columnGetters - Must be key => value for the 'name of column' => 'getter method'
  * @property string $primaryKeyName - Column name of primary key
  * @property array<string, string> $foreignKeys - Column name of foreign keys in an array
  */
@@ -38,7 +38,9 @@ abstract class AbstractRepository
     public function getEntityName(): string
     {
         if (empty($this->entityName)) {
-            throw new RepositoryException(sprintf('Entity for table "%s" is not specified in its repository.', $this->getTableName()));
+            throw new RepositoryException(
+                sprintf('Entity for table "%s" is not specified in its repository.', $this->getTableName())
+            );
         }
         return $this->entityName;
     }
@@ -61,7 +63,9 @@ abstract class AbstractRepository
             }
         }
         if (empty($setters)) {
-            throw new RepositoryException(sprintf('There are no columnSetters for "%s" repository', $this->getEntityName()));
+            throw new RepositoryException(
+                sprintf('There are no columnSetters for "%s" repository', $this->getEntityName())
+            );
         }
         return $setters;
     }
@@ -78,7 +82,9 @@ abstract class AbstractRepository
             unset($getters[$this->primaryKeyName]);
         }
         if (empty($getters)) {
-            throw new RepositoryException(sprintf('There are no columnGetters for "%s" repository', $this->getEntityName()));
+            throw new RepositoryException(
+                sprintf('There are no columnGetters for "%s" repository', $this->getEntityName())
+            );
         }
         return $getters;
     }
@@ -132,7 +138,9 @@ abstract class AbstractRepository
     {
         $columnsKeys = implode(',', $this->getColumnKeys($excludePrimaryKey));
         if (empty($columnsKeys)) {
-            throw new RepositoryException(sprintf('Columns keys are empty for "%s" repository', $this->getEntityName()));
+            throw new RepositoryException(
+                sprintf('Columns keys are empty for "%s" repository', $this->getEntityName())
+            );
         }
         return $columnsKeys;
     }
@@ -150,7 +158,9 @@ abstract class AbstractRepository
         }
         $columnKeys = array_keys($keys);
         if (empty($columnKeys)) {
-            throw new RepositoryException(sprintf('Columns keys are empty for "%s" repository', $this->getEntityName()));
+            throw new RepositoryException(
+                sprintf('Columns keys are empty for "%s" repository', $this->getEntityName())
+            );
         }
 
         return $columnKeys;
@@ -299,8 +309,8 @@ abstract class AbstractRepository
             }
 
             $columnValues = $entityExists ?
-                $columnValues . " " . $key . " = '" . $entity->{$method}() . "',":
-                $columnValues . "'" . $entity->{$method}() . "',";
+                $columnValues . " " . $key . " = '" . $entity->{$method}() . "',"
+                : $columnValues . "'" . $entity->{$method}() . "',";
         }
         return rtrim($columnValues, ',');
     }
@@ -341,7 +351,9 @@ abstract class AbstractRepository
     private function getTableName(): string
     {
         if (empty($this->tableName)) {
-            throw new RepositoryException('A repository you have just made does not contain a property for the $tableName');
+            throw new RepositoryException(
+                'A repository you have just made does not contain a property for the $tableName'
+            );
         }
         return $this->tableName;
     }
