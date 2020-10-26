@@ -12,12 +12,21 @@ use JsonException;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Throwable;
 
+/**
+ * Class UserController
+ * @package App\Controller
+ * @codeCoverageIgnore
+ */
 class UserController extends AbstractController
 {
     private UserService $userService;
 
+    /**
+     * UserController constructor.
+     * @param UserService $userService
+     * @codeCoverageIgnore
+     */
     public function __construct(UserService $userService)
     {
         $this->userService = $userService;
@@ -28,6 +37,7 @@ class UserController extends AbstractController
      * @param ResponseInterface $response
      * @return ResponseInterface
      * @throws ImANumptyException|EntityException
+     * @codeCoverageIgnore
      */
     public function getAll(RequestInterface $request, ResponseInterface $response): ResponseInterface
     {
@@ -54,6 +64,7 @@ class UserController extends AbstractController
      * @param string[] $args
      * @return ResponseInterface
      * @throws EntityException
+     * @codeCoverageIgnore
      */
     public function getUser(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
@@ -82,6 +93,7 @@ class UserController extends AbstractController
      * @param ResponseInterface $response
      * @return ResponseInterface
      * @throws EntityException|JsonException
+     * @codeCoverageIgnore
      */
     public function createUser(RequestInterface $request, ResponseInterface $response): ResponseInterface
     {
@@ -113,6 +125,7 @@ class UserController extends AbstractController
      * @param string[] $args
      * @return ResponseInterface
      * @throws EntityException|JsonException
+     * @codeCoverageIgnore
      */
     public function updateUser(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
@@ -146,6 +159,7 @@ class UserController extends AbstractController
      * @param ResponseInterface $response
      * @param string[] $args
      * @return ResponseInterface
+     * @codeCoverageIgnore
      */
     public function deleteUser(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {

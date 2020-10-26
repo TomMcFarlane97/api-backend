@@ -17,6 +17,11 @@ class NoteController extends AbstractController
 {
     private NoteService $noteService;
 
+    /**
+     * NoteController constructor.
+     * @param NoteService $noteService
+     * @codeCoverageIgnore
+     */
     public function __construct(NoteService $noteService)
     {
         $this->noteService = $noteService;
@@ -28,6 +33,7 @@ class NoteController extends AbstractController
      * @param string[] $args
      * @return ResponseInterface
      * @throws EntityException|ImANumptyException
+     * @codeCoverageIgnore
      */
     public function getAll(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
@@ -54,6 +60,7 @@ class NoteController extends AbstractController
      * @param string[] $args
      * @return ResponseInterface
      * @throws JsonException|EntityException
+     * @codeCoverageIgnore
      */
     public function createNote(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
@@ -88,6 +95,7 @@ class NoteController extends AbstractController
      * @param string[] $args
      * @return ResponseInterface
      * @throws EntityException
+     * @codeCoverageIgnore
      */
     public function getNote(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
@@ -114,6 +122,7 @@ class NoteController extends AbstractController
      * @param string[] $args
      * @return ResponseInterface
      * @throws EntityException|JsonException
+     * @codeCoverageIgnore
      */
     public function updateNote(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
@@ -148,6 +157,7 @@ class NoteController extends AbstractController
      * @param ResponseInterface $response
      * @param string[] $args
      * @return ResponseInterface
+     * @codeCoverageIgnore
      */
     public function deleteNote(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
