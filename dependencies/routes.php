@@ -2,11 +2,15 @@
 
 use App\Controller\UserController;
 use App\Controller\NoteController;
+use App\Controller\PingController;
 
 $userRoute = '/user';
 $specificUserRoute = $userRoute . '/{userId}';
 $noteRoute = $specificUserRoute . '/note';
 $specificNotesRoute = $noteRoute . '/{noteId}';
+
+// ping
+$app->any('/', PingController::class);
 
 // User route
 $app->get($userRoute, UserController::class . ':getAll');
