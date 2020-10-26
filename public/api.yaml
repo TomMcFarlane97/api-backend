@@ -6,7 +6,7 @@ info:
   title: "API Backend"
   contact:
     email: "tom.mcfarlane97@gmail.com"
-host: "http://localhost:8080"
+host: "localhost:8080"
 basePath: "/"
 tags:
   - name: "user"
@@ -22,7 +22,7 @@ tags:
 schemes:
   - "http"
 paths:
-  /user:
+  /users:
     get:
       tags:
         - "user"
@@ -30,27 +30,35 @@ paths:
       operationId: "getAllUsers"
       produces:
         - "application/json"
-      parameters:
-        - in: "body"
-          description: "Get an array of user objects"
-          required: true
+      responses:
+        "200":
+          description: "OK"
           schema:
             $ref: "#/definitions/User"
-      responses:
-        "201":
-          description: "Created"
         "400":
           description: "Bad request"
+          schema:
+            $ref: "#/definitions/Error"
         "415":
           description: "Unsuported MIME Type"
+          schema:
+            $ref: "#/definitions/Error"
         "418":
           description: "I am a teapot - if you code wrong this error will show"
+          schema:
+            $ref: "#/definitions/Error"
         "422":
           description: "Unprocessable entity"
+          schema:
+            $ref: "#/definitions/Error"
         "500":
           description: "Internal server error"
+          schema:
+            $ref: "#/definitions/Error"
         "501":
           description: "Not Implemented"
+          schema:
+            $ref: "#/definitions/Error"
     post:
       tags:
         - "user"
@@ -61,30 +69,44 @@ paths:
       parameters:
         - in: "body"
           name: "body"
-          description: "Get an array of user objects"
+          description: "Create a user"
           required: true
           schema:
             $ref: "#/definitions/User"
       responses:
         "201":
           description: "Created"
+          schema:
+            $ref: "#/definitions/User"
         "400":
           description: "Bad request"
+          schema:
+            $ref: "#/definitions/Error"
         "415":
           description: "Unsuported MIME Type"
+          schema:
+            $ref: "#/definitions/Error"
         "418":
           description: "I am a teapot - if you code wrong this error will show"
+          schema:
+            $ref: "#/definitions/Error"
         "422":
           description: "Unprocessable entity"
+          schema:
+            $ref: "#/definitions/Error"
         "500":
           description: "Internal server error"
+          schema:
+            $ref: "#/definitions/Error"
         "501":
           description: "Not Implemented"
-  /user/{userId}:
+          schema:
+            $ref: "#/definitions/Error"
+  /users/{userId}:
     get:
       tags:
         - "user"
-      summary: "Get user"
+      summary: "Get a user"
       operationId: "getUser"
       produces:
         - "application/json"
@@ -93,28 +115,36 @@ paths:
           name: userId
           type: integer
           required: true
-          description: Numeric ID of the user to get
-        - in: "body"
-          name: "body"
-          description: "Get a user objects"
-          required: true
+          description: Numeric ID of the user
+      responses:
+        "200":
+          description: "OK"
           schema:
             $ref: "#/definitions/User"
-      responses:
-        "201":
-          description: "Created"
         "400":
           description: "Bad request"
+          schema:
+            $ref: "#/definitions/Error"
         "415":
           description: "Unsuported MIME Type"
+          schema:
+            $ref: "#/definitions/Error"
         "418":
           description: "I am a teapot - if you code wrong this error will show"
+          schema:
+            $ref: "#/definitions/Error"
         "422":
           description: "Unprocessable entity"
+          schema:
+            $ref: "#/definitions/Error"
         "500":
           description: "Internal server error"
+          schema:
+            $ref: "#/definitions/Error"
         "501":
           description: "Not Implemented"
+          schema:
+            $ref: "#/definitions/Error"
     patch:
       tags:
         - "user"
@@ -127,7 +157,7 @@ paths:
           name: userId
           type: integer
           required: true
-          description: Numeric ID of the user to get
+          description: "Numeric ID of the user"
         - in: "body"
           name: "body"
           description: "Update a user object"
@@ -135,20 +165,34 @@ paths:
           schema:
             $ref: "#/definitions/User"
       responses:
-        "201":
-          description: "Created"
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/User"
         "400":
           description: "Bad request"
+          schema:
+            $ref: "#/definitions/Error"
         "415":
           description: "Unsuported MIME Type"
+          schema:
+            $ref: "#/definitions/Error"
         "418":
           description: "I am a teapot - if you code wrong this error will show"
+          schema:
+            $ref: "#/definitions/Error"
         "422":
           description: "Unprocessable entity"
+          schema:
+            $ref: "#/definitions/Error"
         "500":
           description: "Internal server error"
+          schema:
+            $ref: "#/definitions/Error"
         "501":
           description: "Not Implemented"
+          schema:
+            $ref: "#/definitions/Error"
     delete:
       tags:
         - "user"
@@ -161,7 +205,7 @@ paths:
           name: userId
           type: integer
           required: true
-          description: Numeric ID of the user to get
+          description: Numeric ID of the user
         - in: "body"
           name: "body"
           description: "Delete a user object"
@@ -169,20 +213,283 @@ paths:
           schema:
             $ref: "#/definitions/User"
       responses:
-        "201":
-          description: "Created"
+        "200":
+          description: "OK"
         "400":
           description: "Bad request"
+          schema:
+            $ref: "#/definitions/Error"
         "415":
           description: "Unsuported MIME Type"
+          schema:
+            $ref: "#/definitions/Error"
         "418":
           description: "I am a teapot - if you code wrong this error will show"
+          schema:
+            $ref: "#/definitions/Error"
         "422":
           description: "Unprocessable entity"
+          schema:
+            $ref: "#/definitions/Error"
         "500":
           description: "Internal server error"
+          schema:
+            $ref: "#/definitions/Error"
         "501":
           description: "Not Implemented"
+          schema:
+            $ref: "#/definitions/Error"
+  /users/{userId}/notes:
+    get:
+      tags:
+        - "note"
+      summary: "Get all notes for user"
+      operationId: "getAllNotesForUser"
+      produces:
+        - "application/json"
+      parameters:
+        - in: path
+          name: userId
+          type: integer
+          required: true
+          description: Numeric ID of the user
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/Note"
+        "400":
+          description: "Bad request"
+          schema:
+            $ref: "#/definitions/Error"
+        "415":
+          description: "Unsuported MIME Type"
+          schema:
+            $ref: "#/definitions/Error"
+        "418":
+          description: "I am a teapot - if you code wrong this error will show"
+          schema:
+            $ref: "#/definitions/Error"
+        "422":
+          description: "Unprocessable entity"
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: "Internal server error"
+          schema:
+            $ref: "#/definitions/Error"
+        "501":
+          description: "Not Implemented"
+          schema:
+            $ref: "#/definitions/Error"
+    post:
+      tags:
+        - "note"
+      summary: "Create a note for a user"
+      operationId: "createNoteForUser"
+      produces:
+        - "application/json"
+      parameters:
+        - in: path
+          name: userId
+          type: integer
+          required: true
+          description: Numeric ID of the user
+        - in: "body"
+          name: "body"
+          description: "Create a note for a user"
+          required: true
+          schema:
+            $ref: "#/definitions/Note"
+      responses:
+        "201":
+          description: "Created"
+          schema:
+            $ref: "#/definitions/Note"
+        "400":
+          description: "Bad request"
+          schema:
+            $ref: "#/definitions/Error"
+        "415":
+          description: "Unsuported MIME Type"
+          schema:
+            $ref: "#/definitions/Error"
+        "418":
+          description: "I am a teapot - if you code wrong this error will show"
+          schema:
+            $ref: "#/definitions/Error"
+        "422":
+          description: "Unprocessable entity"
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: "Internal server error"
+          schema:
+            $ref: "#/definitions/Error"
+        "501":
+          description: "Not Implemented"
+          schema:
+            $ref: "#/definitions/Error"
+  /users/{userId}/notes/{noteId}:
+    get:
+      tags:
+        - "note"
+      summary: "Get a note for a user"
+      operationId: "getNoteForUser"
+      produces:
+        - "application/json"
+      parameters:
+        - in: path
+          name: userId
+          type: integer
+          required: true
+          description: Numeric ID of the user
+        - in: path
+          name: noteId
+          type: integer
+          required: true
+          description: Numeric ID of the note
+        - in: "body"
+          name: "body"
+          description: "Create a note for a user"
+          required: true
+          schema:
+            $ref: "#/definitions/Note"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/Note"
+        "400":
+          description: "Bad request"
+          schema:
+            $ref: "#/definitions/Error"
+        "415":
+          description: "Unsuported MIME Type"
+          schema:
+            $ref: "#/definitions/Error"
+        "418":
+          description: "I am a teapot - if you code wrong this error will show"
+          schema:
+            $ref: "#/definitions/Error"
+        "422":
+          description: "Unprocessable entity"
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: "Internal server error"
+          schema:
+            $ref: "#/definitions/Error"
+        "501":
+          description: "Not Implemented"
+          schema:
+            $ref: "#/definitions/Error"
+    patch:
+      tags:
+        - "note"
+      summary: "Update note for user"
+      operationId: "updateNoteForUser"
+      produces:
+        - "application/json"
+      parameters:
+        - in: path
+          name: userId
+          type: integer
+          required: true
+          description: Numeric ID of the user
+        - in: path
+          name: noteId
+          type: integer
+          required: true
+          description: Numeric ID of the note
+        - in: "body"
+          name: "body"
+          description: "Create a note for a user"
+          required: true
+          schema:
+            $ref: "#/definitions/Note"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/Note"
+        "400":
+          description: "Bad request"
+          schema:
+            $ref: "#/definitions/Error"
+        "415":
+          description: "Unsuported MIME Type"
+          schema:
+            $ref: "#/definitions/Error"
+        "418":
+          description: "I am a teapot - if you code wrong this error will show"
+          schema:
+            $ref: "#/definitions/Error"
+        "422":
+          description: "Unprocessable entity"
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: "Internal server error"
+          schema:
+            $ref: "#/definitions/Error"
+        "501":
+          description: "Not Implemented"
+          schema:
+            $ref: "#/definitions/Error"
+    delete:
+      tags:
+        - "note"
+      summary: "Delete user"
+      operationId: "delete note for User"
+      produces:
+        - "application/json"
+      parameters:
+        - in: path
+          name: userId
+          type: integer
+          required: true
+          description: Numeric ID of the user
+        - in: path
+          name: noteId
+          type: integer
+          required: true
+          description: Numeric ID of the note
+        - in: "body"
+          name: "body"
+          description: "Create a note for a user"
+          required: true
+          schema:
+            $ref: "#/definitions/Note"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/Note"
+        "400":
+          description: "Bad request"
+          schema:
+            $ref: "#/definitions/Error"
+        "415":
+          description: "Unsuported MIME Type"
+          schema:
+            $ref: "#/definitions/Error"
+        "418":
+          description: "I am a teapot - if you code wrong this error will show"
+          schema:
+            $ref: "#/definitions/Error"
+        "422":
+          description: "Unprocessable entity"
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: "Internal server error"
+          schema:
+            $ref: "#/definitions/Error"
+        "501":
+          description: "Not Implemented"
+          schema:
+            $ref: "#/definitions/Error"
 definitions:
   User:
     type: "object"
@@ -210,3 +517,8 @@ definitions:
         type: "integer"
         format: "int64"
         readOnly: true
+  Error:
+    type: "object"
+    properties:
+      message:
+        type: "string"
