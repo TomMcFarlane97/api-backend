@@ -38,5 +38,16 @@ This reduces chances of bugs and helps improve coding standard overall.
 
 ## Contributing to the project
 - Must be PSR compliant
-- Must use OOP PHP 7.4 to programme
+- Must use OOP PHP 7.4 to code
 - Before pushing up, ensure code is compliant with PHPStan and meets the standard
+
+## Configuring xdebug
+- Configuring xdebug has been made simple and it can be done through docker. To configure it, please follow the commands
+- `Preferences > Languages & Frameworks > PHP > Debug` - configure `Xdebug Port` to be 9000
+- `Preferences > Languages & Frameworks > PHP > Server` - create a new server and configure to the below
+- `host` - localhost
+- `port` - 8080
+- `Debugger` - xdebug
+- `Path mappings` - convert the root of the project to `/var/www/`
+- `Run > Edit Configurations` - create a `PHP Remote Debug` - select your server name and add in the key `PHPSTORM`
+- Set `Break at First line` and it should start listening if the chrome extension is set up.
