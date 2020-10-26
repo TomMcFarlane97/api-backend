@@ -3,5 +3,6 @@
 .DS_Store
 /docker/DS_Store
 
+/test/output/*
 phinx.yml
 .env
