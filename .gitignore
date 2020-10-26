@@ -2,7 +2,7 @@
 .idea
 .DS_Store
 /docker/DS_Store
-
+.phpunit.result.cache
 /test/output/*
 phinx.yml
 .env
