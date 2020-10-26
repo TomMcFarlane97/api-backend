@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-# This file is to run composer commands through docker
-
-docker exec -it api-backend_web_1 composer "$@"
