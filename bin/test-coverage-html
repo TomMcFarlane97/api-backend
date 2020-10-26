@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 # This file is to run composer commands through docker
 
-docker exec -it api-backend_web_1 vendor/bin/phpunit test/ --coverage-html test/output
+docker exec -it api-backend_web_1 vendor/bin/phpunit test/ --coverage-html test/output/src
