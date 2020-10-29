@@ -16,8 +16,8 @@ $app = AppFactory::create();
 
 $app->addErrorMiddleware(true, true, true);
 
-require_once __DIR__ . DIRECTORY_SEPARATOR . 'middleware.php';
-
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'routes.php';
+
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'middleware.php';
 
 $app->run();

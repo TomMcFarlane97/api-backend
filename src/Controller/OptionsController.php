@@ -9,6 +9,6 @@ class OptionsController
 {
     public function __invoke(RequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        return $respose;
+        return $response;
     }
 }

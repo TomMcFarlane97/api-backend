@@ -114,7 +114,7 @@ class UserController extends AbstractController
         }
         return new JsonResponse(
             $user->convertToArray(),
-            self::ACCEPTED,
+            self::CREATED,
             $this->jsonResponseHeader
         );
     }
