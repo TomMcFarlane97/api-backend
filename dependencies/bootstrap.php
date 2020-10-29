@@ -9,12 +9,14 @@ require_once dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SE
 $dotenv = Dotenv::createImmutable(dirname(__DIR__, 1));
 $dotenv->load();
 $containerBuilder = new ContainerBuilder();
-$containerBuilder->addDefinitions(__DIR__ .DIRECTORY_SEPARATOR . 'dependencies.php');
+$containerBuilder->addDefinitions(__DIR__ . DIRECTORY_SEPARATOR . 'dependencies.php');
 $container = $containerBuilder->build();
 AppFactory::setContainer($container);
 $app = AppFactory::create();
 
 $app->addErrorMiddleware(true, true, true);
+
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'middleware.php';
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'routes.php';
 
