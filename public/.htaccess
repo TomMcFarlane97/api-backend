@@ -20,4 +20,6 @@ RewriteRule ^(.*)$ %{ENV:BASE}index.php [NC,L]
 
 <IfModule mod_headers.c>
     Header set Access-Control-Allow-Origin "http://localhost:3000"
+    Header set Access-Control-Allow-Headers 'Content-Type, Accept, Origin'
+    Header set Access-Control-Allow-Methods 'GET, POST, DELETE, PATCH, OPTIONS'
 </IfModule>
