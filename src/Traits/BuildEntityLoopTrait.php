@@ -2,9 +2,9 @@
 
 namespace App\Traits;
 
-use App\Controller\AbstractController;
 use App\Exceptions\RepositoryException;
 use App\Exceptions\RequestException;
+use App\Helpers\StatusCodes;
 use App\Interfaces\ConvertToArrayInterface;
 use App\Repository\AbstractRepository;
 
@@ -44,7 +44,7 @@ trait BuildEntityLoopTrait
                     'Body of request does not contain the following values %s',
                     implode(',', array_keys($columnSetters))
                 ),
-                AbstractController::UNPROCESSABLE_ENTITY
+                StatusCodes::UNPROCESSABLE_ENTITY
             );
         }
 
@@ -71,7 +71,7 @@ trait BuildEntityLoopTrait
                     $columnKey,
                     $this->repository->getColumnKeysAsString(true)
                 ),
-                AbstractController::UNPROCESSABLE_ENTITY
+                StatusCodes::UNPROCESSABLE_ENTITY
             );
         }
 
@@ -83,7 +83,7 @@ trait BuildEntityLoopTrait
                     $method,
                     $entityString
                 ),
-                AbstractController::NOT_IMPLEMENTED
+                StatusCodes::NOT_IMPLEMENTED
             );
         }
     }

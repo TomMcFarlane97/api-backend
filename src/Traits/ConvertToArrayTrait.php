@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Exceptions\EntityException;
+use App\Helpers\StatusCodes;
 
 /**
  * Trait ConvertToArrayTrait
@@ -21,7 +22,8 @@ trait ConvertToArrayTrait
         foreach (array_keys($this->columnGetters) as $key) {
             if (!isset($this->{$key})) {
                 throw new EntityException(
-                    sprintf('"%s" Entity does not contain this column in the trait "%s"', __CLASS__, $key)
+                    sprintf('"%s" Entity does not contain this column in the trait "%s"', __CLASS__, $key),
+                    StatusCodes::TEA_POT
                 );
             }
             $transformer[$key] = $this->{$key};

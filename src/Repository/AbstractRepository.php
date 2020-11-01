@@ -2,7 +2,6 @@
 
 namespace App\Repository;
 
-use App\Controller\AbstractController;
 use App\Exceptions\DatabaseException;
 use App\Exceptions\RepositoryException;
 use App\Factory\DatabaseFactory;
@@ -258,7 +257,7 @@ abstract class AbstractRepository
                     $primaryKeyValue,
                     $this->getTableName()
                 ),
-                AbstractController::INTERNAL_SERVER_ERROR
+                StatusCodes::INTERNAL_SERVER_ERROR
             );
         }
     }
@@ -296,7 +295,7 @@ abstract class AbstractRepository
             if (empty($getters[$key])) {
                 throw new RepositoryException(
                     sprintf('Key "%s" does not exist on the columnGetters', $key),
-                    AbstractController::INTERNAL_SERVER_ERROR
+                    StatusCodes::INTERNAL_SERVER_ERROR
                 );
             }
 
@@ -304,7 +303,7 @@ abstract class AbstractRepository
             if (!method_exists($entity, $method)) {
                 throw new RepositoryException(
                     sprintf('Getter "%s" does not exist on the entity "%s"', $method, get_class($entity)),
-                    AbstractController::INTERNAL_SERVER_ERROR
+                    StatusCodes::INTERNAL_SERVER_ERROR
                 );
             }
 
@@ -337,7 +336,7 @@ abstract class AbstractRepository
         if (!empty($conditions)) {
             throw new RepositoryException(
                 sprintf('Unknown columns in query "%s"', implode(',', array_keys($conditions))),
-                AbstractController::INTERNAL_SERVER_ERROR
+                StatusCodes::INTERNAL_SERVER_ERROR
             );
         }
 
@@ -377,7 +376,7 @@ abstract class AbstractRepository
         if (!$query->execute()) {
             throw new DatabaseException(
                 sprintf($query->errorCode() . ' BAD SQL - "%s"', $queryString),
-                AbstractController::INTERNAL_SERVER_ERROR
+                StatusCodes::INTERNAL_SERVER_ERROR
             );
         }
         return $query;

@@ -2,11 +2,11 @@
 
 namespace App\Service;
 
-use App\Controller\AbstractController;
 use App\Entity\Note;
 use App\Exceptions\DatabaseException;
 use App\Exceptions\RepositoryException;
 use App\Exceptions\RequestException;
+use App\Helpers\StatusCodes;
 use App\Repository\NoteRepository;
 use App\Traits\BuildEntityLoopTrait;
 
@@ -58,7 +58,7 @@ class NoteService
         if (!$note) {
             throw new RequestException(
                 sprintf('Unable to find note "%s", for user "%s"', $noteId, $userId),
-                AbstractController::BAD_REQUEST
+                StatusCodes::BAD_REQUEST
             );
         }
 

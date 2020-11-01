@@ -6,20 +6,13 @@ use App\Exceptions\EntityException;
 use App\Exceptions\ImANumptyException;
 use App\Exceptions\RequestException;
 use App\Helpers\Environment;
+use App\Helpers\StatusCodes;
 use App\Interfaces\ConvertToArrayInterface;
 use Psr\Http\Message\RequestInterface;
 use Throwable;
 
 abstract class AbstractController
 {
-    public const ACCEPTED = 200;
-    public const BAD_REQUEST = 400;
-    public const UNSUPPORTED_MIME_TYPE = 415;
-    public const TEA_POT = 418;
-    public const UNPROCESSABLE_ENTITY = 422;
-    public const CREATED = 201;
-    public const INTERNAL_SERVER_ERROR = 500;
-    public const NOT_IMPLEMENTED = 501;
     protected const JSON = 'application/json';
     protected const HEADER_CONTENT_TYPE = 'Content-type';
     private const HEADER_ACCEPT = 'Accept';
@@ -40,7 +33,7 @@ abstract class AbstractController
         ) {
             throw new RequestException(
                 sprintf('Request header "%s" must be type "%s"', self::HEADER_CONTENT_TYPE, self::JSON),
-                self::UNSUPPORTED_MIME_TYPE
+                StatusCodes::UNSUPPORTED_MIME_TYPE
             );
         }
 
@@ -48,7 +41,7 @@ abstract class AbstractController
         if (!empty($acceptHeader[0]) && !str_contains($acceptHeader[0], self::JSON)) {
             throw new RequestException(
                 sprintf('Request header "%s" must be type "%s"', self::HEADER_ACCEPT, self::JSON),
-                self::BAD_REQUEST
+                StatusCodes::BAD_REQUEST
             );
         }
     }
@@ -76,7 +69,10 @@ abstract class AbstractController
         $message = [];
         foreach ($entities as $entity) {
             if (!$entity instanceof ConvertToArrayInterface) {
-                throw new ImANumptyException(sprintf('Can you even code bro. Method - %s', __METHOD__), self::TEA_POT);
+                throw new ImANumptyException(
+                    sprintf('Can you even code bro. Method - %s', __METHOD__),
+                    StatusCodes::TEA_POT
+                );
             }
             $message[] = $entity->convertToArray();
         }

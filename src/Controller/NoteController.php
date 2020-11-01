@@ -7,6 +7,7 @@ use App\Exceptions\EntityException;
 use App\Exceptions\ImANumptyException;
 use App\Exceptions\RepositoryException;
 use App\Exceptions\RequestException;
+use App\Helpers\StatusCodes;
 use App\Service\NoteService;
 use JsonException;
 use Laminas\Diactoros\Response\JsonResponse;
@@ -49,7 +50,7 @@ class NoteController extends AbstractController
         }
         return new JsonResponse(
             [self::convertObjectToArray($notes)],
-            self::ACCEPTED,
+            StatusCodes::ACCEPTED,
             $this->jsonResponseHeader
         );
     }
@@ -84,7 +85,7 @@ class NoteController extends AbstractController
         }
         return new JsonResponse(
             $user->convertToArray(),
-            self::ACCEPTED,
+            StatusCodes::ACCEPTED,
             $this->jsonResponseHeader
         );
     }
@@ -111,7 +112,7 @@ class NoteController extends AbstractController
         }
         return new JsonResponse(
             $note->convertToArray(),
-            self::ACCEPTED,
+            StatusCodes::ACCEPTED,
             $this->jsonResponseHeader
         );
     }
@@ -147,7 +148,7 @@ class NoteController extends AbstractController
         }
         return new JsonResponse(
             $user->convertToArray(),
-            self::ACCEPTED,
+            StatusCodes::ACCEPTED,
             $this->jsonResponseHeader
         );
     }
@@ -174,7 +175,7 @@ class NoteController extends AbstractController
         }
         return new JsonResponse(
             [],
-            self::ACCEPTED,
+            StatusCodes::ACCEPTED,
             $this->jsonResponseHeader
         );
     }

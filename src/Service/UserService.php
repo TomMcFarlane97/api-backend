@@ -2,11 +2,11 @@
 
 namespace App\Service;
 
-use App\Controller\AbstractController;
 use App\Entity\User;
 use App\Exceptions\DatabaseException;
 use App\Exceptions\RepositoryException;
 use App\Exceptions\RequestException;
+use App\Helpers\StatusCodes;
 use App\Repository\UserRepository;
 use App\Traits\BuildEntityLoopTrait;
 
@@ -103,7 +103,7 @@ class UserService
         if (!$user) {
             throw new RequestException(
                 sprintf('User ID of "%s" was not found', $userId),
-                AbstractController::BAD_REQUEST
+                StatusCodes::BAD_REQUEST
             );
         }
         return $user;

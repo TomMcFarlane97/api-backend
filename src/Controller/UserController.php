@@ -7,6 +7,7 @@ use App\Exceptions\EntityException;
 use App\Exceptions\ImANumptyException;
 use App\Exceptions\RepositoryException;
 use App\Exceptions\RequestException;
+use App\Helpers\StatusCodes;
 use App\Service\UserService;
 use JsonException;
 use Laminas\Diactoros\Response\JsonResponse;
@@ -114,7 +115,7 @@ class UserController extends AbstractController
         }
         return new JsonResponse(
             $user->convertToArray(),
-            self::CREATED,
+            StatusCodes::CREATED,
             $this->jsonResponseHeader
         );
     }
@@ -149,7 +150,7 @@ class UserController extends AbstractController
         }
         return new JsonResponse(
             $user->convertToArray(),
-            self::ACCEPTED,
+            StatusCodes::ACCEPTED,
             $this->jsonResponseHeader
         );
     }
@@ -175,7 +176,7 @@ class UserController extends AbstractController
         }
         return new JsonResponse(
             [],
-            self::ACCEPTED,
+            StatusCodes::ACCEPTED,
             $this->jsonResponseHeader
         );
     }

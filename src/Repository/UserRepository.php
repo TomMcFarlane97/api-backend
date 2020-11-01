@@ -15,6 +15,7 @@ use App\Traits\UserDatabaseTrait;
  * @method User insertSingle(string $columnNames, string $columnValues): User
  * @method User updateSingleByPrimaryKey(int $primaryKeyValue, string $updatedValues): User
  * @method null deleteItem(int $primaryKeyValue): User
+ * @method null|User findOneBy(array $whereCondition): ?User
  */
 class UserRepository extends AbstractRepository
 {

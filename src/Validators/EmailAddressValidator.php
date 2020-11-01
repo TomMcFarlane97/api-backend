@@ -2,8 +2,8 @@
 
 namespace App\Validators;
 
-use App\Controller\AbstractController;
 use App\Exceptions\RequestException;
+use App\Helpers\StatusCodes;
 
 class EmailAddressValidator
 {
@@ -18,14 +18,14 @@ class EmailAddressValidator
         if (!filter_var($emailAddress, FILTER_VALIDATE_EMAIL)) {
             throw new RequestException(
                 sprintf('Email of "%s" is not valid.', $emailAddress),
-                AbstractController::UNPROCESSABLE_ENTITY
+                StatusCodes::UNPROCESSABLE_ENTITY
             );
         }
         $emailAddressSanitised = filter_var($emailAddress, FILTER_SANITIZE_EMAIL);
         if (!$emailAddressSanitised) {
             throw new RequestException(
                 sprintf('Email of "%s" is valid but cannot can not be sanitised.', $emailAddress),
-                AbstractController::UNPROCESSABLE_ENTITY
+                StatusCodes::UNPROCESSABLE_ENTITY
             );
         }
         $this->emailAddress = $emailAddressSanitised;
