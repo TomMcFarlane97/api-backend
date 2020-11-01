@@ -2,7 +2,7 @@
 
 namespace App\Middleware;
 
-use Monolog\Logger;
+use App\Helpers\RequestMethods;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -21,29 +21,10 @@ class CORSMiddleware
         ServerRequestInterface $request,
         RequestHandlerInterface $handler
     ): ResponseInterface {
-        $this->logger->error('I am in ' . __CLASS__ . '::' . __METHOD__);
-        if ($request->getMethod() !== 'OPTIONS' || php_sapi_name() === 'cli') {
-            return $handler->handle($request);
-        }
-
-        $route = $request->getAttribute('route');
-        $methods = [];
-
-        if (!empty($route)) {
-            $pattern = $route->getPattern();
-
-            foreach ($this->router->getRoutes() as $route) {
-                if ($pattern === $route->getPattern()) {
-                    $methods = array_merge_recursive($methods, $route->getMethods());
-                }
-            }
-        } else {
-            $methods[] = $request->getMethod();
-        }
-
         return $handler->handle($request)
-            ->withHeader('Access-Control-Allow-Origin', '*')
-            ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Accept, Origin')
-            ->withHeader('Access-Control-Allow-Methods', implode(',', $methods));
+            ->withHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
+            ->withHeader('Access-Control-Allow-Headers', 'Accept, Origin')
+            ->withHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, PATCH, OPTIONS')
+            ->withHeader('Access-Control-Allow-Credentials', 'true');
     }
 }

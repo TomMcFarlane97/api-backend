@@ -15,13 +15,13 @@ $container = $containerBuilder->build();
 AppFactory::setContainer($container);
 $app = AppFactory::create();
 
-$app->addBodyParsingMiddleware();
-
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'middleware.php';
 
-require_once __DIR__ . DIRECTORY_SEPARATOR . 'routes.php';
-
 $app->addRoutingMiddleware();
+
+//$app->addBodyParsingMiddleware();
+
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'routes.php';
 
 $app->addErrorMiddleware(true, true, true, $app->getContainer()->get('logger'));
 

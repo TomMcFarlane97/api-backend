@@ -13,26 +13,28 @@ define('SPECIFIC_USER_ROUTE', '/user/{userId}');
 $noteRoute = SPECIFIC_USER_ROUTE . '/note';
 $specificNotesRoute = $noteRoute . '/{noteId}';
 
-// Set preflight options request
-$app->options('/{routes:.+}', OptionsController::class);
-
 // Ping
 $app->any('/', PingController::class);
 
 // Authentication
 $app->get(AUTHENTICATE_ROUTE, AuthenticationController::class . ':refresh');
 $app->post(AUTHENTICATE_ROUTE, AuthenticationController::class . ':login');
+$app->options(AUTHENTICATE_ROUTE, OptionsController::class);
 
 // User route
 $app->get(USER_ROUTE, UserController::class . ':getAll');
 $app->post(USER_ROUTE, UserController::class . ':createUser');
+$app->options(USER_ROUTE, OptionsController::class);
 $app->get(SPECIFIC_USER_ROUTE, UserController::class . ':getUser');
 $app->patch(SPECIFIC_USER_ROUTE, UserController::class . ':updateUser');
 $app->delete(SPECIFIC_USER_ROUTE, UserController::class . ':deleteUser');
+$app->options(SPECIFIC_USER_ROUTE, OptionsController::class);
 
 // Note route
 $app->get($noteRoute, NoteController::class . ':getAll');
 $app->post($noteRoute, NoteController::class . ':createNote');
+$app->options($noteRoute, OptionsController::class);
 $app->get($specificNotesRoute, NoteController::class . ':getNote');
 $app->patch($specificNotesRoute, NoteController::class . ':updateNote');
 $app->delete($specificNotesRoute, NoteController::class . ':deleteNote');
+$app->options($specificNotesRoute, OptionsController::class);
