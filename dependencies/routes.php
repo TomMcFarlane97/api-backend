@@ -6,6 +6,7 @@ use App\Controller\UserController;
 use App\Controller\NoteController;
 use App\Controller\PingController;
 
+$authenticateRoute = '/authenticate';
 $userRoute = '/user';
 $specificUserRoute = $userRoute . '/{userId}';
 $noteRoute = $specificUserRoute . '/note';
@@ -18,7 +19,8 @@ $app->options('/{routes:.+}', OptionsController::class);
 $app->any('/', PingController::class);
 
 // Authentication
-$app->post('/authenticate', AuthenticationController::class . ':login');
+$app->get($authenticateRoute, AuthenticationController::class . ':refresh');
+$app->post($authenticateRoute, AuthenticationController::class . ':login');
 
 // User route
 $app->get($userRoute, UserController::class . ':getAll');
