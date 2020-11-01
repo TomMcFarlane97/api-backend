@@ -7,6 +7,7 @@ use App\Exceptions\DatabaseException;
 use App\Exceptions\ImANumptyException;
 use App\Exceptions\RepositoryException;
 use App\Exceptions\RequestException;
+use App\Helpers\RequestMethods;
 use App\Helpers\StatusCodes;
 use App\Helpers\TokenPayload;
 use App\Repository\UserRepository;
@@ -36,25 +37,25 @@ class AuthenticationService
     }
 
     /**
-     * @param array $authHeaderArray
-     * @return array
-     * @throws ImANumptyException
-     */
-    public function validateToken(array $authHeaderArray): array
-    {
-        return (new BearerTokenValidator(
-            self::getTokenString($authHeaderArray[0] ?? '')
-        ))->getToken();
-    }
-
-    /**
      * @param string[] $authHeaderArray
      * @return string[]
      * @throws DatabaseException|RequestException|ImANumptyException|RepositoryException
      */
     public function refreshToken(array $authHeaderArray): array
     {
-        $tokenDetails = $this->validateToken($authHeaderArray);
+        $user = $this->getUserFromBearerToken($authHeaderArray);
+        return $this->generateTokenContentResponse($user->getId());
+    }
+
+    /**
+     * @param array $authHeaderArray
+     * @return User
+     * @throws DatabaseException|ImANumptyException|RepositoryException|RequestException
+     */
+    public function getUserFromBearerToken(array $authHeaderArray): User
+    {
+        $tokenDetails = $this->getTokenDetails($authHeaderArray[0] ?? '');
+
         $user = $this->userRepository->find(
             (new IntegerIDValidator($tokenDetails['uid'] ?? 0))->getId()
         );
@@ -63,7 +64,41 @@ class AuthenticationService
             throw new RequestException('User cannot be found', StatusCodes::BAD_REQUEST);
         }
 
-        return $this->generateTokenContentResponse($user->getId());
+        return $user;
+    }
+
+    public static function isAuthenticationRequired(string $requestedPath, string $requestedMethod): bool
+    {
+        if (self::shouldExcludeRouteFromAuthentication($requestedPath, $requestedMethod)) {
+            return false;
+        }
+        return !self::shouldExcludeMethodFromAuthentication($requestedMethod);
+    }
+
+    private static function shouldExcludeRouteFromAuthentication(string $requestedPath, string $requestedMethod): bool
+    {
+        foreach (TokenPayload::routesToExclude() as $method => $route) {
+            if ($requestedPath === $route && $requestedMethod === $method) {
+                return true;
+            }
+            continue;
+        }
+        return false;
+    }
+
+    private static function shouldExcludeMethodFromAuthentication($requestedMethod): bool
+    {
+        return in_array($requestedMethod, TokenPayload::methodsToExclude(), true);
+    }
+
+    /**
+     * @param string $token
+     * @return array
+     * @throws ImANumptyException
+     */
+    private function getTokenDetails(string $token): array
+    {
+        return (new BearerTokenValidator(self::getTokenString($token)))->getToken();
     }
 
     private static function getTokenString(string $token): string

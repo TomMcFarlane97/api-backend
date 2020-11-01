@@ -6,6 +6,7 @@ abstract class StatusCodes
 {
     public const ACCEPTED = 200;
     public const BAD_REQUEST = 400;
+    public const UNAUTHORIZED = 401;
     public const UNSUPPORTED_MIME_TYPE = 415;
     public const TEA_POT = 418;
     public const UNPROCESSABLE_ENTITY = 422;

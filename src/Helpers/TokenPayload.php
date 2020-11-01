@@ -4,6 +4,11 @@ namespace App\Helpers;
 
 use App\Exceptions\ImANumptyException;
 use Carbon\Carbon;
+use http\Client\Response;
+use http\Env\Request;
+use Laminas\Diactoros\Response\JsonResponse;
+use Psr\Http\Message\ResponseInterface;
+use Slim\Routing\Route;
 
 class TokenPayload
 {
@@ -49,6 +54,27 @@ class TokenPayload
     {
         return $_ENV['ENCODING_METHOD'] ?? self::DEFAULT_ENCODING_METHOD;
     }
+
+    /**
+     * @return string[]
+     */
+    public static function routesToExclude(): array
+    {
+        return [
+            RequestMethods::POST => AUTHENTICATE_ROUTE,
+        ];
+    }
+
+    /**
+     * @return string[]
+     */
+    public static function methodsToExclude(): array
+    {
+        return [
+            RequestMethods::OPTIONS,
+        ];
+    }
+
 
     /**
      * @return string

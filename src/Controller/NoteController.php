@@ -85,7 +85,7 @@ class NoteController extends AbstractController
         }
         return new JsonResponse(
             $user->convertToArray(),
-            StatusCodes::ACCEPTED,
+            StatusCodes::CREATED,
             $this->jsonResponseHeader
         );
     }

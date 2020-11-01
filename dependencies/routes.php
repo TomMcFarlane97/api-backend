@@ -6,9 +6,10 @@ use App\Controller\UserController;
 use App\Controller\NoteController;
 use App\Controller\PingController;
 
-$authenticateRoute = '/authenticate';
-$userRoute = '/user';
-$specificUserRoute = $userRoute . '/{userId}';
+define('AUTHENTICATE_ROUTE', '/authenticate');
+define('USER_ROUTE', '/user');
+define('SPECIFIC_USER_ROUTE', '/user/{userId}');
+
 $noteRoute = $specificUserRoute . '/note';
 $specificNotesRoute = $noteRoute . '/{noteId}';
 
@@ -19,15 +20,15 @@ $app->options('/{routes:.+}', OptionsController::class);
 $app->any('/', PingController::class);
 
 // Authentication
-$app->get($authenticateRoute, AuthenticationController::class . ':refresh');
-$app->post($authenticateRoute, AuthenticationController::class . ':login');
+$app->get(AUTHENTICATE_ROUTE, AuthenticationController::class . ':refresh');
+$app->post(AUTHENTICATE_ROUTE, AuthenticationController::class . ':login');
 
 // User route
-$app->get($userRoute, UserController::class . ':getAll');
-$app->post($userRoute, UserController::class . ':createUser');
-$app->get($specificUserRoute, UserController::class . ':getUser');
-$app->patch($specificUserRoute, UserController::class . ':updateUser');
-$app->delete($specificUserRoute, UserController::class . ':deleteUser');
+$app->get(USER_ROUTE, UserController::class . ':getAll');
+$app->post(USER_ROUTE, UserController::class . ':createUser');
+$app->get(SPECIFIC_USER_ROUTE, UserController::class . ':getUser');
+$app->patch(SPECIFIC_USER_ROUTE, UserController::class . ':updateUser');
+$app->delete(SPECIFIC_USER_ROUTE, UserController::class . ':deleteUser');
 
 // Note route
 $app->get($noteRoute, NoteController::class . ':getAll');
