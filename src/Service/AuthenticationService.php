@@ -22,32 +22,36 @@ class AuthenticationService
 
     /**
      * @param string[] $userContents
-     * @return string
+     * @return string[]
      * @throws DatabaseException|RepositoryException|ImANumptyException
      */
-    public function authenticate(array $userContents): string
+    public function authenticate(array $userContents): array
     {
         $user = $this->userRepository->findOneBy($userContents);
         if (!$user) {
             throw new RepositoryException('User does not exist', StatusCodes::BAD_REQUEST);
         }
-        return $this->generateToken($user->getId());
+        return [
+            TokenPayload::BEARER_TOKEN => $this->generateToken($user->getId()),
+            TokenPayload::REFRESH_TOKEN => $this->generateToken($user->getId(), true),
+        ];
     }
 
     public function validateToken(array $authHeaderArray): void
     {
-        $token = new BearerTokenValidator($bearerToken[0] ?? '');
+        $token = (new BearerTokenValidator($authHeaderArray[0] ?? ''));
     }
 
     /**
      * @param int $userId
+     * @param bool $isRefresh
      * @return string
      * @throws ImANumptyException
      */
-    private function generateToken(int $userId): string
+    private function generateToken(int $userId, bool $isRefresh = false): string
     {
         return JWT::encode(
-            TokenPayload::toArray($userId),
+            TokenPayload::toArray($userId, $isRefresh),
             TokenPayload::getPrivateKey(),
             TokenPayload::getEncodingMethod()
         );

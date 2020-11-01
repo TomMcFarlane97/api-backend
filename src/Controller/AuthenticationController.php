@@ -45,7 +45,7 @@ class AuthenticationController extends AbstractController
     {
         try {
             $this->validateRequestIsJson($request);
-            $token = $this->authenticationService->authenticate(json_decode(
+            $tokens = $this->authenticationService->authenticate(json_decode(
                 $request->getBody()->getContents(),
                 true,
                 512,
@@ -60,7 +60,7 @@ class AuthenticationController extends AbstractController
         }
 
         return new JsonResponse(
-            ['token' => $token],
+            $tokens,
             StatusCodes::ACCEPTED,
             $this->jsonResponseHeader
         );

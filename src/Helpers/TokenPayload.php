@@ -7,6 +7,8 @@ use Carbon\Carbon;
 
 class TokenPayload
 {
+    public const BEARER_TOKEN = 'bearer';
+    public const REFRESH_TOKEN = 'refresh';
     private const DEFAULT_ENCODING_METHOD = 'HS256';
 
     /**
@@ -14,17 +16,16 @@ class TokenPayload
      * @return string[]
      * @throws ImANumptyException
      */
-    public static function toArray(int $userId): array
+    public static function toArray(int $userId, bool $isRefresh = false): array
     {
         $time = Carbon::now();
-//        var_dump($time->toString(), $time->addHour()->toString()); exit;
         $serviceAccountEmail = self::getServiceAccountEmail();
         return [
             'iss' => $serviceAccountEmail,
             'sub' => $serviceAccountEmail,
             'aud' => self::getAudience(),
-            'iat' => $time->toString(),
-            'exp' => $time->addHour(),
+            'iat' => $time->timestamp,
+            'exp' => $isRefresh ? $time->addMonth()->timestamp : $time->addHour()->timestamp,
             'uid' => $userId,
         ];
     }
