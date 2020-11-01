@@ -6,18 +6,14 @@ use App\Exceptions\EntityException;
 use App\Exceptions\ImANumptyException;
 use App\Exceptions\RequestException;
 use App\Helpers\Environment;
+use App\Helpers\ResponseHeaders;
 use App\Helpers\StatusCodes;
 use App\Interfaces\ConvertToArrayInterface;
 use Psr\Http\Message\RequestInterface;
 use Throwable;
 
-abstract class AbstractController
+abstract class AbstractController extends ResponseHeaders
 {
-    protected const JSON = 'application/json';
-    protected const HEADER_CONTENT_TYPE = 'Content-type';
-    private const HEADER_ACCEPT = 'Accept';
-    protected const HEADER_AUTHORIZATION = 'Authorization';
-
     /** @var string[] */
     protected array $jsonResponseHeader = [self::HEADER_CONTENT_TYPE => self::JSON];
 
