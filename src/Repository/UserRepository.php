@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\User;
 use App\Exceptions\DatabaseException;
 use App\Exceptions\RepositoryException;
+use App\Interfaces\Repository\UserRepositoryInterface;
 use App\Traits\UserDatabaseTrait;
 
 /**
@@ -17,7 +18,7 @@ use App\Traits\UserDatabaseTrait;
  * @method null deleteItem(int $primaryKeyValue): User
  * @method null|User findOneBy(array $whereCondition): ?User
  */
-class UserRepository extends AbstractRepository
+class UserRepository extends AbstractRepository implements UserRepositoryInterface
 {
     use UserDatabaseTrait;
 

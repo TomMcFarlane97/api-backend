@@ -7,7 +7,7 @@ use App\Exceptions\DatabaseException;
 use App\Exceptions\RepositoryException;
 use App\Exceptions\RequestException;
 use App\Helpers\StatusCodes;
-use App\Repository\NoteRepository;
+use App\Interfaces\Repository\NoteRepositoryInterface;
 use App\Traits\BuildEntityLoopTrait;
 
 // phpcs:disable
@@ -21,10 +21,10 @@ class NoteService
 {
     use BuildEntityLoopTrait;
 
-    private NoteRepository $repository;
+    private NoteRepositoryInterface $repository;
     private UserService $userService;
 
-    public function __construct(NoteRepository $notesRepository, UserService $userService)
+    public function __construct(NoteRepositoryInterface $notesRepository, UserService $userService)
     {
         $this->repository = $notesRepository;
         $this->userService = $userService;

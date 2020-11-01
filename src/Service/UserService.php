@@ -7,7 +7,7 @@ use App\Exceptions\DatabaseException;
 use App\Exceptions\RepositoryException;
 use App\Exceptions\RequestException;
 use App\Helpers\StatusCodes;
-use App\Repository\UserRepository;
+use App\Interfaces\Repository\UserRepositoryInterface;
 use App\Traits\BuildEntityLoopTrait;
 
 // phpcs:disable
@@ -21,9 +21,9 @@ class UserService
 {
     use BuildEntityLoopTrait;
 
-    private UserRepository $repository;
+    private UserRepositoryInterface $repository;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserRepositoryInterface $userRepository)
     {
         $this->repository = $userRepository;
     }

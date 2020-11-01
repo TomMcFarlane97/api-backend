@@ -7,6 +7,7 @@ use App\Exceptions\RepositoryException;
 use App\Factory\DatabaseFactory;
 use App\Helpers\StatusCodes;
 use App\Interfaces\ConvertToArrayInterface;
+use App\Interfaces\Repository\AbstractRepositoryInterface;
 use PDO;
 use PDOStatement;
 
@@ -20,7 +21,7 @@ use PDOStatement;
  * @property string $primaryKeyName - Column name of primary key
  * @property array<string, string> $foreignKeys - Column name of foreign keys in an array
  */
-abstract class AbstractRepository
+abstract class AbstractRepository implements AbstractRepositoryInterface
 {
     /** @var array<string, string> */
     protected array $foreignKeys = [];
@@ -47,6 +48,7 @@ abstract class AbstractRepository
 
     /**
      * @param bool $excludePrimaryKey
+     * @param bool $excludeForeignKeys
      * @return array<string, string>
      * @throws RepositoryException
      */
@@ -111,7 +113,7 @@ abstract class AbstractRepository
     }
 
     /**
-     * @return object[]
+     * @return ConvertToArrayInterface[]
      * @throws DatabaseException|RepositoryException
      */
     public function findAll(): array
@@ -143,45 +145,6 @@ abstract class AbstractRepository
             );
         }
         return $columnsKeys;
-    }
-
-    /**
-     * @param bool $excludePrimaryKey
-     * @return string[]
-     * @throws RepositoryException
-     */
-    protected function getColumnKeys(bool $excludePrimaryKey = false): array
-    {
-        $keys = $this->columnSetters;
-        if ($excludePrimaryKey) {
-            unset($keys[$this->primaryKeyName]);
-        }
-        $columnKeys = array_keys($keys);
-        if (empty($columnKeys)) {
-            throw new RepositoryException(
-                sprintf('Columns keys are empty for "%s" repository', $this->getEntityName())
-            );
-        }
-
-        return $columnKeys;
-    }
-
-    /**
-     * @param string $columnNames
-     * @param string $columnValues
-     * @return ConvertToArrayInterface
-     * @throws DatabaseException|RepositoryException
-     */
-    protected function insertSingle(string $columnNames, string $columnValues): ConvertToArrayInterface
-    {
-        $queryString = sprintf(
-            'INSERT INTO %s (%s) VALUES (%s)',
-            $this->getTableName(),
-            $columnNames,
-            $columnValues
-        );
-        $this->getPDOStatementAndExecute($queryString);
-        return $this->find((int) $this->connection->lastInsertId());
     }
 
     /**
@@ -231,6 +194,45 @@ abstract class AbstractRepository
             return null;
         }
         return $query;
+    }
+
+    /**
+     * @param bool $excludePrimaryKey
+     * @return string[]
+     * @throws RepositoryException
+     */
+    protected function getColumnKeys(bool $excludePrimaryKey = false): array
+    {
+        $keys = $this->columnSetters;
+        if ($excludePrimaryKey) {
+            unset($keys[$this->primaryKeyName]);
+        }
+        $columnKeys = array_keys($keys);
+        if (empty($columnKeys)) {
+            throw new RepositoryException(
+                sprintf('Columns keys are empty for "%s" repository', $this->getEntityName())
+            );
+        }
+
+        return $columnKeys;
+    }
+
+    /**
+     * @param string $columnNames
+     * @param string $columnValues
+     * @return ConvertToArrayInterface
+     * @throws DatabaseException|RepositoryException
+     */
+    protected function insertSingle(string $columnNames, string $columnValues): ConvertToArrayInterface
+    {
+        $queryString = sprintf(
+            'INSERT INTO %s (%s) VALUES (%s)',
+            $this->getTableName(),
+            $columnNames,
+            $columnValues
+        );
+        $this->getPDOStatementAndExecute($queryString);
+        return $this->find((int) $this->connection->lastInsertId());
     }
 
     /**

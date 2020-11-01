@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Note;
 use App\Exceptions\DatabaseException;
 use App\Exceptions\RepositoryException;
+use App\Interfaces\Repository\NoteRepositoryInterface;
 use App\Traits\NoteDatabaseTrait;
 
 /**
@@ -18,15 +19,15 @@ use App\Traits\NoteDatabaseTrait;
  * @method Note updateSingleByPrimaryKey(int $primaryKeyValue, string $updatedValues): Note
  * @method null deleteItem(int $primaryKeyValue): null
  */
-class NoteRepository extends AbstractRepository
+class NoteRepository extends AbstractRepository implements NoteRepositoryInterface
 {
     use NoteDatabaseTrait;
 
+    /** @var string[] */
+    protected array $foreignKeys = ['user_id'];
     protected string $tableName = 'notes';
     protected string $primaryKeyName = 'id';
     protected string $entityName = Note::class;
-    /** @var string[] */
-    protected array $foreignKeys = ['user_id'];
 
     /**
      * @param Note $note

@@ -7,19 +7,18 @@ use App\Exceptions\DatabaseException;
 use App\Exceptions\ImANumptyException;
 use App\Exceptions\RepositoryException;
 use App\Exceptions\RequestException;
-use App\Helpers\RequestMethods;
 use App\Helpers\StatusCodes;
 use App\Helpers\TokenPayload;
-use App\Repository\UserRepository;
+use App\Interfaces\Repository\UserRepositoryInterface;
 use App\Validators\BearerTokenValidator;
 use App\Validators\IntegerIDValidator;
 use Firebase\JWT\JWT;
 
 class AuthenticationService
 {
-    private UserRepository $userRepository;
+    private UserRepositoryInterface $userRepository;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserRepositoryInterface $userRepository)
     {
         $this->userRepository = $userRepository;
     }
