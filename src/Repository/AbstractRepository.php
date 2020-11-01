@@ -215,7 +215,7 @@ abstract class AbstractRepository
      * @return ConvertToArrayInterface
      * @throws RepositoryException|DatabaseException
      */
-    public function findOneBy(array $whereConditions = []): ConvertToArrayInterface
+    public function findOneBy(array $whereConditions = []): ?ConvertToArrayInterface
     {
         $queryString = sprintf(
             'SELECT %s FROM %s WHERE %s %s',
@@ -227,11 +227,7 @@ abstract class AbstractRepository
         $query = $this->getPDOStatementAndExecute($queryString)
             ->fetchObject($this->getEntityName());
         if ($query === false) {
-            throw new DatabaseException(sprintf(
-                'Internal Database error trying to retrieve the results on method "%s" and line "%s"',
-                __METHOD__,
-                __LINE__
-            ));
+            return null;
         }
         return $query;
     }

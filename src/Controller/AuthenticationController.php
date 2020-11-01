@@ -38,19 +38,19 @@ class AuthenticationController extends AbstractController
      * @param RequestInterface $request
      * @param ResponseInterface $response
      * @return ResponseInterface
-     * @throws ImANumptyException|EntityException
+     * @throws ImANumptyException
      * @codeCoverageIgnore
      */
     public function login(RequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
             $this->validateRequestIsJson($request);
-            $users = $this->authenticationService->authenticate(json_decode(
+            $token = $this->authenticationService->authenticate(json_decode(
                 $request->getBody()->getContents(),
                 true,
                 512,
                 JSON_THROW_ON_ERROR
-            ));;
+            ));
         } catch (RequestException | DatabaseException | RepositoryException | JsonException $exception) {
             return new JsonResponse(
                 $this->getMessage($exception),
@@ -58,8 +58,9 @@ class AuthenticationController extends AbstractController
                 $this->jsonResponseHeader
             );
         }
+
         return new JsonResponse(
-            [self::convertObjectToArray($users)],
+            ['token' => $token],
             StatusCodes::ACCEPTED,
             $this->jsonResponseHeader
         );

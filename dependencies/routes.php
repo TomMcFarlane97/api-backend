@@ -1,5 +1,6 @@
 <?php
 
+use App\Controller\AuthenticationController;
 use App\Controller\OptionsController;
 use App\Controller\UserController;
 use App\Controller\NoteController;
@@ -13,8 +14,11 @@ $specificNotesRoute = $noteRoute . '/{noteId}';
 // Set preflight options request
 $app->options('/{routes:.+}', OptionsController::class);
 
-// ping
+// Ping
 $app->any('/', PingController::class);
+
+// Authentication
+$app->post('/authenticate', AuthenticationController::class . ':login');
 
 // User route
 $app->get($userRoute, UserController::class . ':getAll');

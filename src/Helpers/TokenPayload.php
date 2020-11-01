@@ -7,6 +7,8 @@ use Carbon\Carbon;
 
 class TokenPayload
 {
+    private const DEFAULT_ENCODING_METHOD = 'HS256';
+
     /**
      * @param int $userId
      * @return string[]
@@ -25,6 +27,26 @@ class TokenPayload
             'exp' => $time->addHour(),
             'uid' => $userId,
         ];
+    }
+
+    /**
+     * @return string
+     * @throws ImANumptyException
+     */
+    public static function getPrivateKey(): string
+    {
+        if (empty($_ENV['PRIVATE_KEY'])) {
+            throw new ImANumptyException(
+                'Key "PRIVATE_KEY" is not configured in ENV',
+                StatusCodes::NOT_IMPLEMENTED
+            );
+        }
+        return $_ENV['PRIVATE_KEY'];
+    }
+
+    public static function getEncodingMethod(): string
+    {
+        return $_ENV['ENCODING_METHOD'] ?? self::DEFAULT_ENCODING_METHOD;
     }
 
     /**

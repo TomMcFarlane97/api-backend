@@ -46,6 +46,10 @@ class AuthenticationService
      */
     private function generateToken(int $userId): string
     {
-        return JWT::encode(TokenPayload::toArray($userId));
+        return JWT::encode(
+            TokenPayload::toArray($userId),
+            TokenPayload::getPrivateKey(),
+            TokenPayload::getEncodingMethod()
+        );
     }
 }
