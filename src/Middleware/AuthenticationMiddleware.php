@@ -16,19 +16,24 @@ use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerInterface;
 use UnexpectedValueException;
 
 class AuthenticationMiddleware
 {
     private AuthenticationService $authenticationService;
+    private LoggerInterface $logger;
 
-    public function __construct(AuthenticationService $authenticationService)
+    public function __construct(AuthenticationService $authenticationService, LoggerInterface $logger)
     {
         $this->authenticationService = $authenticationService;
+        $this->logger = $logger;
     }
 
-    public function __invoke(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
-    {
+    public function __invoke(
+        ServerRequestInterface $request,
+        RequestHandlerInterface $handler
+    ): ResponseInterface {
         $isAuthenticationRequired = AuthenticationService::isAuthenticationRequired(
             $request->getUri()->getPath(),
             $request->getMethod()

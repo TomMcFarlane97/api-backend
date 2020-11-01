@@ -10,7 +10,7 @@ define('AUTHENTICATE_ROUTE', '/authenticate');
 define('USER_ROUTE', '/user');
 define('SPECIFIC_USER_ROUTE', '/user/{userId}');
 
-$noteRoute = $specificUserRoute . '/note';
+$noteRoute = SPECIFIC_USER_ROUTE . '/note';
 $specificNotesRoute = $noteRoute . '/{noteId}';
 
 // Set preflight options request

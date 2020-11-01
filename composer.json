@@ -25,6 +25,7 @@
         "firebase/php-jwt": "^5.2",
         "itsgoingd/clockwork": "^4.1",
         "laminas/laminas-diactoros": "^2.4",
+        "monolog/monolog": "^2.1",
         "nesbot/carbon": "^2.41",
         "php-di/php-di": "^6.3",
         "phpstan/phpstan": "^0.12.51",
