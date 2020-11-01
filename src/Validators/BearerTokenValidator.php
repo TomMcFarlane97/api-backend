@@ -31,6 +31,9 @@ class BearerTokenValidator
         return (array) JWT::decode($token, TokenPayload::getPrivateKey(), [TokenPayload::getEncodingMethod()]);
     }
 
+    /**
+     * @return array<string, string|int>
+     */
     public function getToken(): array
     {
         return $this->token;

@@ -4,11 +4,6 @@ namespace App\Helpers;
 
 use App\Exceptions\ImANumptyException;
 use Carbon\Carbon;
-use http\Client\Response;
-use http\Env\Request;
-use Laminas\Diactoros\Response\JsonResponse;
-use Psr\Http\Message\ResponseInterface;
-use Slim\Routing\Route;
 
 class TokenPayload
 {
@@ -18,7 +13,8 @@ class TokenPayload
 
     /**
      * @param int $userId
-     * @return string[]
+     * @param bool $isRefresh
+     * @return array<string, float|int|string>
      * @throws ImANumptyException
      */
     public static function toArray(int $userId, bool $isRefresh = false): array
@@ -50,6 +46,9 @@ class TokenPayload
         return $_ENV['PRIVATE_KEY'];
     }
 
+    /**
+     * @return string
+     */
     public static function getEncodingMethod(): string
     {
         return $_ENV['ENCODING_METHOD'] ?? self::DEFAULT_ENCODING_METHOD;

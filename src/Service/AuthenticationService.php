@@ -48,7 +48,7 @@ class AuthenticationService
     }
 
     /**
-     * @param array $authHeaderArray
+     * @param string[] $authHeaderArray
      * @return User
      * @throws DatabaseException|ImANumptyException|RepositoryException|RequestException
      */
@@ -86,14 +86,14 @@ class AuthenticationService
         return false;
     }
 
-    private static function shouldExcludeMethodFromAuthentication($requestedMethod): bool
+    private static function shouldExcludeMethodFromAuthentication(string $requestedMethod): bool
     {
         return in_array($requestedMethod, TokenPayload::methodsToExclude(), true);
     }
 
     /**
      * @param string $token
-     * @return array
+     * @return array<string, string|int>
      * @throws ImANumptyException
      */
     private function getTokenDetails(string $token): array
@@ -107,8 +107,8 @@ class AuthenticationService
     }
 
     /**
-     * @param $userId
-     * @return array
+     * @param int $userId
+     * @return string[]
      * @throws ImANumptyException
      */
     private function generateTokenContentResponse(int $userId): array

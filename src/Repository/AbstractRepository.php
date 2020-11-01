@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Exceptions\DatabaseException;
 use App\Exceptions\RepositoryException;
 use App\Factory\DatabaseFactory;
+use App\Helpers\StatusCodes;
 use App\Interfaces\ConvertToArrayInterface;
 use PDO;
 use PDOStatement;

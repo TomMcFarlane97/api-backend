@@ -54,7 +54,7 @@ class UserController extends AbstractController
         }
         return new JsonResponse(
             [self::convertObjectToArray($users)],
-            self::ACCEPTED,
+            StatusCodes::ACCEPTED,
             $this->jsonResponseHeader
         );
     }
@@ -73,7 +73,10 @@ class UserController extends AbstractController
             $this->validateRequestIsJson($request);
             $user = $this->userService->getUserById((int) $args['userId']);
             if (!$user) {
-                throw new RequestException(sprintf('User ID "%s" does not exist', $args['userId']), self::BAD_REQUEST);
+                throw new RequestException(
+                    sprintf('User ID "%s" does not exist', $args['userId']),
+                    StatusCodes::BAD_REQUEST
+                );
             }
         } catch (RequestException | DatabaseException | RepositoryException $exception) {
             return new JsonResponse(
@@ -84,7 +87,7 @@ class UserController extends AbstractController
         }
         return new JsonResponse(
             $user->convertToArray(),
-            self::ACCEPTED,
+            StatusCodes::ACCEPTED,
             $this->jsonResponseHeader
         );
     }
