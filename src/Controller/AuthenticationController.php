@@ -6,12 +6,14 @@ use App\Exceptions\DatabaseException;
 use App\Exceptions\ImANumptyException;
 use App\Exceptions\RepositoryException;
 use App\Exceptions\RequestException;
+use App\Helpers\ErrorResponse;
 use App\Helpers\StatusCodes;
 use App\Service\AuthenticationService;
 use JsonException;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class UserController
@@ -20,18 +22,6 @@ use Psr\Http\Message\ResponseInterface;
  */
 class AuthenticationController extends AbstractController
 {
-    private AuthenticationService $authenticationService;
-
-    /**
-     * UserController constructor.
-     * @param AuthenticationService $authenticationService
-     * @codeCoverageIgnore
-     */
-    public function __construct(AuthenticationService $authenticationService)
-    {
-        $this->authenticationService = $authenticationService;
-    }
-
     /**
      * @param RequestInterface $request
      * @param ResponseInterface $response
@@ -42,7 +32,10 @@ class AuthenticationController extends AbstractController
     public function login(RequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
-            $this->validateRequestIsJson($request);
+            $errorResponse = $this->validateRequest($request);
+            if ($errorResponse instanceof ErrorResponse) {
+                return $errorResponse;
+            }
             $tokens = $this->authenticationService->authenticate(json_decode(
                 $request->getBody()->getContents(),
                 true,
@@ -74,7 +67,10 @@ class AuthenticationController extends AbstractController
     public function refresh(RequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
-            $this->validateRequestIsJson($request);
+            $errorResponse = $this->validateRequest($request);
+            if ($errorResponse instanceof ErrorResponse) {
+                return $errorResponse;
+            }
             $tokens = $this->authenticationService->refreshToken($request->getHeader(self::HEADER_AUTHORIZATION));
         } catch (RequestException | DatabaseException | RepositoryException | JsonException $exception) {
             return new JsonResponse(

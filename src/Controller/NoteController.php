@@ -7,12 +7,15 @@ use App\Exceptions\EntityException;
 use App\Exceptions\ImANumptyException;
 use App\Exceptions\RepositoryException;
 use App\Exceptions\RequestException;
+use App\Helpers\ErrorResponse;
 use App\Helpers\StatusCodes;
+use App\Service\AuthenticationService;
 use App\Service\NoteService;
 use JsonException;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 
 class NoteController extends AbstractController
 {
@@ -20,11 +23,17 @@ class NoteController extends AbstractController
 
     /**
      * NoteController constructor.
+     * @param AuthenticationService $authenticationService
+     * @param LoggerInterface $logger
      * @param NoteService $noteService
      * @codeCoverageIgnore
      */
-    public function __construct(NoteService $noteService)
-    {
+    public function __construct(
+        AuthenticationService $authenticationService,
+        LoggerInterface $logger,
+        NoteService $noteService
+    ) {
+        parent::__construct($authenticationService, $logger);
         $this->noteService = $noteService;
     }
 
@@ -39,7 +48,10 @@ class NoteController extends AbstractController
     public function getAll(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         try {
-            $this->validateRequestIsJson($request);
+            $errorResponse = $this->validateRequest($request);
+            if ($errorResponse instanceof ErrorResponse) {
+                return $errorResponse;
+            }
             $notes = $this->noteService->getAllNotesForUser((int) $args['userId']);
         } catch (RequestException | DatabaseException | RepositoryException $exception) {
             return new JsonResponse(
@@ -66,7 +78,10 @@ class NoteController extends AbstractController
     public function createNote(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         try {
-            $this->validateRequestIsJson($request);
+            $errorResponse = $this->validateRequest($request);
+            if ($errorResponse instanceof ErrorResponse) {
+                return $errorResponse;
+            }
             $user = $this->noteService->createNote(
                 (int) $args['userId'],
                 json_decode(
@@ -101,7 +116,10 @@ class NoteController extends AbstractController
     public function getNote(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         try {
-            $this->validateRequestIsJson($request);
+            $errorResponse = $this->validateRequest($request);
+            if ($errorResponse instanceof ErrorResponse) {
+                return $errorResponse;
+            }
             $note = $this->noteService->getNoteFromUser((int) $args['userId'], (int) $args['noteId']);
         } catch (RequestException | DatabaseException | RepositoryException $exception) {
             return new JsonResponse(
@@ -128,7 +146,10 @@ class NoteController extends AbstractController
     public function updateNote(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         try {
-            $this->validateRequestIsJson($request);
+            $errorResponse = $this->validateRequest($request);
+            if ($errorResponse instanceof ErrorResponse) {
+                return $errorResponse;
+            }
             $user = $this->noteService->updateNote(
                 (int) $args['userId'],
                 (int) $args['noteId'],
@@ -164,7 +185,10 @@ class NoteController extends AbstractController
     {
 
         try {
-            $this->validateRequestIsJson($request);
+            $errorResponse = $this->validateRequest($request);
+            if ($errorResponse instanceof ErrorResponse) {
+                return $errorResponse;
+            }
             $this->noteService->deleteNote((int) $args['userId'], (int) $args['noteId']);
         } catch (RequestException | DatabaseException | RepositoryException $exception) {
             return new JsonResponse(

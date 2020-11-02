@@ -7,12 +7,15 @@ use App\Exceptions\EntityException;
 use App\Exceptions\ImANumptyException;
 use App\Exceptions\RepositoryException;
 use App\Exceptions\RequestException;
+use App\Helpers\ErrorResponse;
 use App\Helpers\StatusCodes;
+use App\Service\AuthenticationService;
 use App\Service\UserService;
 use JsonException;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class UserController
@@ -25,11 +28,17 @@ class UserController extends AbstractController
 
     /**
      * UserController constructor.
+     * @param AuthenticationService $authenticationService
+     * @param LoggerInterface $logger
      * @param UserService $userService
      * @codeCoverageIgnore
      */
-    public function __construct(UserService $userService)
-    {
+    public function __construct(
+        AuthenticationService $authenticationService,
+        LoggerInterface $logger,
+        UserService $userService
+    ) {
+        parent::__construct($authenticationService, $logger);
         $this->userService = $userService;
     }
 
@@ -43,7 +52,10 @@ class UserController extends AbstractController
     public function getAll(RequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
-            $this->validateRequestIsJson($request);
+            $errorResponse = $this->validateRequest($request);
+            if ($errorResponse instanceof ErrorResponse) {
+                return $errorResponse;
+            }
             $users = $this->userService->getAllUsers();
         } catch (RequestException | DatabaseException | RepositoryException $exception) {
             return new JsonResponse(
@@ -70,7 +82,10 @@ class UserController extends AbstractController
     public function getUser(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         try {
-            $this->validateRequestIsJson($request);
+            $errorResponse = $this->validateRequest($request);
+            if ($errorResponse instanceof ErrorResponse) {
+                return $errorResponse;
+            }
             $user = $this->userService->getUserById((int) $args['userId']);
             if (!$user) {
                 throw new RequestException(
@@ -102,7 +117,10 @@ class UserController extends AbstractController
     public function createUser(RequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
-            $this->validateRequestIsJson($request);
+            $errorResponse = $this->validateRequest($request);
+            if ($errorResponse instanceof ErrorResponse) {
+                return $errorResponse;
+            }
             $user = $this->userService->createUser(json_decode(
                 $request->getBody()->getContents(),
                 true,
@@ -134,7 +152,10 @@ class UserController extends AbstractController
     public function updateUser(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         try {
-            $this->validateRequestIsJson($request);
+            $errorResponse = $this->validateRequest($request);
+            if ($errorResponse instanceof ErrorResponse) {
+                return $errorResponse;
+            }
             $user = $this->userService->updateUser(
                 (int) $args['userId'],
                 json_decode(
@@ -168,7 +189,10 @@ class UserController extends AbstractController
     public function deleteUser(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         try {
-            $this->validateRequestIsJson($request);
+            $errorResponse = $this->validateRequest($request);
+            if ($errorResponse instanceof ErrorResponse) {
+                return $errorResponse;
+            }
             $this->userService->deleteUser((int) $args['userId']);
         } catch (RequestException | DatabaseException | RepositoryException $exception) {
             return new JsonResponse(
