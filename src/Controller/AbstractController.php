@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Exceptions\DatabaseException;
 use App\Exceptions\EntityException;
 use App\Exceptions\ImANumptyException;
@@ -26,9 +27,9 @@ abstract class AbstractController extends ResponseHeaders
 {
     /** @var string[] */
     protected array $jsonResponseHeader = [self::HEADER_CONTENT_TYPE => self::JSON];
-
     protected AuthenticationService $authenticationService;
     protected LoggerInterface $logger;
+    private User $user;
 
     public function __construct(AuthenticationService $authenticationService, LoggerInterface $logger)
     {
@@ -86,6 +87,11 @@ abstract class AbstractController extends ResponseHeaders
         return $message;
     }
 
+    protected function getUser(): User
+    {
+        return $this->user;
+    }
+
     /**
      * @param RequestInterface $request
      * @throws RequestException
@@ -93,10 +99,10 @@ abstract class AbstractController extends ResponseHeaders
     private function validateRequestIsJson(RequestInterface $request): void
     {
         if (
-        $this->shouldRequestHaveContentTypeHeader(
-            $request->getHeader(self::HEADER_CONTENT_TYPE),
-            $request->getBody()->getContents()
-        )
+            $this->shouldRequestHaveContentTypeHeader(
+                $request->getHeader(self::HEADER_CONTENT_TYPE),
+                $request->getBody()->getContents()
+            )
         ) {
             throw new RequestException(
                 sprintf('Request header "%s" must be type "%s"', self::HEADER_CONTENT_TYPE, self::JSON),
@@ -141,7 +147,8 @@ abstract class AbstractController extends ResponseHeaders
     private function validateAuthentication(array $authenticationHeader): ?ResponseInterface
     {
         try {
-            $this->authenticationService->getUserFromBearerToken($authenticationHeader);
+            $user = $this->authenticationService->getUserFromBearerToken($authenticationHeader);
+            $this->setUser($user);
         } catch (DatabaseException | ImANumptyException | RepositoryException | RequestException $exception) {
             $this->logger->error($exception->getMessage(), $exception->getTrace());
             return new ErrorResponse(
@@ -161,5 +168,10 @@ abstract class AbstractController extends ResponseHeaders
         }
 
         return null;
+    }
+
+    private function setUser(User $user): void
+    {
+        $this->user = $user;
     }
 }

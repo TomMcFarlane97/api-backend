@@ -22,12 +22,12 @@ $app->post(AUTHENTICATE_ROUTE, AuthenticationController::class . ':login');
 $app->options(AUTHENTICATE_ROUTE, OptionsController::class);
 
 // User route
-$app->get(USER_ROUTE, UserController::class . ':getAll');
-$app->post(USER_ROUTE, UserController::class . ':createUser');
+$app->get(USER_ROUTE . 's', UserController::class . ':getAllAction');
+$app->post(USER_ROUTE, UserController::class . ':createUserAction');
+$app->get(USER_ROUTE, UserController::class . ':getUserAction');
 $app->options(USER_ROUTE, OptionsController::class);
-$app->get(SPECIFIC_USER_ROUTE, UserController::class . ':getUser');
-$app->patch(SPECIFIC_USER_ROUTE, UserController::class . ':updateUser');
-$app->delete(SPECIFIC_USER_ROUTE, UserController::class . ':deleteUser');
+$app->patch(SPECIFIC_USER_ROUTE, UserController::class . ':updateUserAction');
+$app->delete(SPECIFIC_USER_ROUTE, UserController::class . ':deleteUserAction');
 $app->options(SPECIFIC_USER_ROUTE, OptionsController::class);
 
 // Note route

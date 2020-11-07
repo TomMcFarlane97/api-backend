@@ -24,9 +24,7 @@ return [
     'settings'  => [
         'determineRouteBeforeAppMiddleware' => true,
     ],
-    'logger' => static function () use ($logger): LoggerInterface {
-        return $logger;
-    },
+    'logger' => $logger,
     LoggerInterface::class => $logger,
     AbstractRepositoryInterface::class => autowire(AbstractRepository::class),
     UserRepositoryInterface::class => autowire(UserRepository::class),

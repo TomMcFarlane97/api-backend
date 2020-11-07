@@ -2,7 +2,6 @@
 
 namespace App\Middleware;
 
-use App\Helpers\RequestMethods;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -23,7 +22,7 @@ class CORSMiddleware
     ): ResponseInterface {
         return $handler->handle($request)
             ->withHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
-            ->withHeader('Access-Control-Allow-Headers', 'Accept, Origin')
+            ->withHeader('Access-Control-Allow-Headers', 'Accept, Origin, Content-Type, Authorization, Cookie')
             ->withHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, PATCH, OPTIONS')
             ->withHeader('Access-Control-Allow-Credentials', 'true');
     }

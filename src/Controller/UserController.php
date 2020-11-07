@@ -49,7 +49,7 @@ class UserController extends AbstractController
      * @throws ImANumptyException|EntityException
      * @codeCoverageIgnore
      */
-    public function getAll(RequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function getAllAction(RequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
             $errorResponse = $this->validateRequest($request);
@@ -74,26 +74,18 @@ class UserController extends AbstractController
     /**
      * @param RequestInterface $request
      * @param ResponseInterface $response
-     * @param string[] $args
      * @return ResponseInterface
      * @throws EntityException
      * @codeCoverageIgnore
      */
-    public function getUser(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    public function getUserAction(RequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
             $errorResponse = $this->validateRequest($request);
             if ($errorResponse instanceof ErrorResponse) {
                 return $errorResponse;
             }
-            $user = $this->userService->getUserById((int) $args['userId']);
-            if (!$user) {
-                throw new RequestException(
-                    sprintf('User ID "%s" does not exist', $args['userId']),
-                    StatusCodes::BAD_REQUEST
-                );
-            }
-        } catch (RequestException | DatabaseException | RepositoryException $exception) {
+        } catch (RequestException $exception) {
             return new JsonResponse(
                 $this->getMessage($exception),
                 $exception->getCode(),
@@ -101,7 +93,7 @@ class UserController extends AbstractController
             );
         }
         return new JsonResponse(
-            $user->convertToArray(),
+            $this->getUser()->convertToArray(),
             StatusCodes::ACCEPTED,
             $this->jsonResponseHeader
         );
@@ -114,7 +106,7 @@ class UserController extends AbstractController
      * @throws EntityException|JsonException
      * @codeCoverageIgnore
      */
-    public function createUser(RequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function createUserAction(RequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
             $errorResponse = $this->validateRequest($request);
@@ -149,8 +141,11 @@ class UserController extends AbstractController
      * @throws EntityException|JsonException
      * @codeCoverageIgnore
      */
-    public function updateUser(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
-    {
+    public function updateUserAction(
+        RequestInterface $request,
+        ResponseInterface $response,
+        array $args
+    ): ResponseInterface {
         try {
             $errorResponse = $this->validateRequest($request);
             if ($errorResponse instanceof ErrorResponse) {
@@ -186,8 +181,11 @@ class UserController extends AbstractController
      * @return ResponseInterface
      * @codeCoverageIgnore
      */
-    public function deleteUser(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
-    {
+    public function deleteUserAction(
+        RequestInterface $request,
+        ResponseInterface $response,
+        array $args
+    ): ResponseInterface {
         try {
             $errorResponse = $this->validateRequest($request);
             if ($errorResponse instanceof ErrorResponse) {
