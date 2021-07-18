@@ -50,4 +50,4 @@ This reduces chances of bugs and helps improve coding standard overall.
 - `Debugger` - xdebug
 - `Path mappings` - convert the root of the project to `/var/www/`
 - `Run > Edit Configurations` - create a `PHP Remote Debug` - select your server name and add in the key `PHPSTORM`
-- Set `Break at First line` and it should start listening if the chrome extension is set up.
+- Set `Break at First line` and it will start listening if the chrome extension is set up.
