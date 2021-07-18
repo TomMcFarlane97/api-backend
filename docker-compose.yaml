@@ -4,7 +4,7 @@ services:
   web:
     build:
       context: .
-      dockerfile: ./Docker/php/Dockerfile
+      dockerfile: ./Docker/PHP/Dockerfile
     ports:
       - "8080:80"
     volumes:
